@@ -1,4 +1,54 @@
-# robust_c3cbf
-Implementation of robst Colision Cone Control Barrier Function
+# Robust Colision Cone Control Barrier Function (RC3BF)
+Implementation of Robust Colision Cone Control Barrier Function for holonomic mobile robot, with kinematic modelled with equations:
 
-![Opis alternatywny](scripts/robot_trajectory.gif)
+![Kinematic Model](fig/kinematic_model.svg)
+
+Where $v$ and $\omega$ are controll inputs.
+
+
+## Colision Cone Conrtol Barrier Function (C3BF)
+Colision Cone Control Barrier Function is defined in following way:
+
+![c3bf](fig/c3bf.svg)
+
+Where $p_r$ and $v_r$ are relative position and velocity of robot and obstacle - as it is presented in figure below.
+
+![collision_cone](fig/colision_cone_fig.png)
+
+And are defined in following way:
+
+![c3bf](fig/pv_relative.svg)
+
+To stay in safe space control needs to met following condition:
+
+![trajectories](fig/condition.svg)
+
+Where derivative is defined as:
+
+![trajectories](fig/h_prim.svg)
+
+Example trajectory of two robots in colision course is presented below:
+
+![trajectories](scripts/robot_trajectory.gif)
+
+## Probabilistic Colision Cone Conrtol Barrier Function (PC3BF)
+Assume that $p_r \sim (\hat{p}_{r}, \Sigma_{p})$ and $v_r \sim (\hat{v}_{r}, \Sigma_{v})$ then uncertain Control Barrier Function has form:
+
+![c3bf](fig/pc3bf.svg)
+
+Where $\delta_{p} \sim (0, \Sigma_{p})$ and $\delta_{v} \sim (0, \Sigma_{v})$.
+
+And derivative has form:
+
+![c3bf](fig/pc3bf_prim.svg)
+
+This leads to inequality condition:
+
+![c3bf](fig/uncertain_condition.svg)
+
+Taking it simply it is $c_{h}(x,u) \sim (\mu_{h}, \sigma_{h}^{2})$.
+
+So finally w need to check if random variable $c_{h}(x,u) \geq 0$ with some required probbaility $1-\delta$.
+This condition can be written as:
+
+![c3bf](fig/probabilistic_condition.svg)
