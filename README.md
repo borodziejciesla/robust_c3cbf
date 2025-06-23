@@ -30,3 +30,25 @@ Where derivative is defined as:
 Example trajectory of two robots in colision course is presented below:
 
 ![trajectories](scripts/robot_trajectory.gif)
+
+## Probabilistic Colision Cone Conrtol Barrier Function (PC3BF)
+Assume that $p_r \sim (\hat{p}_{r}, \Sigma_{p})$ and $v_r \sim (\hat{v}_{r}, \Sigma_{v})$ then uncertain Control Barrier Function has form:
+
+![c3bf](fig/pc3bf.svg)
+
+Where $\delta_{p} \sim (0, \Sigma_{p})$ and $\delta_{v} \sim (0, \Sigma_{v})$.
+
+And derivative has form:
+
+![c3bf](fig/pc3bf_prim.svg)
+
+This leads to inequality condition:
+
+![c3bf](fig/uncertain_condition.svg)
+
+Taking it simply it is $c_{h}(x,u) \sim (\mu_{h}, \sigma_{h}^{2})$.
+
+So finally w need to check if random variable $c_{h}(x,u) \geq 0$ with some required probbaility $1-\delta$.
+This condition can be written as:
+
+![c3bf](fig/probabilistic_condition.svg)
