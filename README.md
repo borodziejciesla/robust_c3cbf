@@ -46,6 +46,14 @@ This leads to inequality condition:
 
 ![c3bf](fig/uncertain_condition.svg)
 
+Where:
+
+![c3bf](fig/h_partial.svg)
+
+![c3bf](fig/h_prim_partial.svg)
+
+![c3bf](fig/delta.svg)
+
 Taking it simply it is $c_{h}(x,u) \sim (\mu_{h}, \sigma_{h}^{2})$.
 
 So finally w need to check if random variable $c_{h}(x,u) \geq 0$ with some required probbaility $1-\delta$.
