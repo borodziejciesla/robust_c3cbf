@@ -6,7 +6,8 @@ Implementation of Robust Colision Cone Control Barrier Function for holonomic mo
 Where $v$ and $\omega$ are controll inputs.
 
 
-## Colision Cone Conrtol Barrier Function (C3BF)
+## Control Barrier Functions
+### Colision Cone Conrtol Barrier Function (C3BF)
 Colision Cone Control Barrier Function is defined in following way:
 
 ![c3bf](fig/c3bf.svg)
@@ -31,7 +32,7 @@ Example trajectory of two robots in colision course is presented below:
 
 ![trajectories](scripts/robot_trajectory.gif)
 
-## Probabilistic Colision Cone Conrtol Barrier Function (PC3BF)
+### Probabilistic Colision Cone Conrtol Barrier Function (PC3BF)
 Assume that $p_r \sim (\hat{p}_{r}, \Sigma_{p})$ and $v_r \sim (\hat{v}_{r}, \Sigma_{v})$ then uncertain Control Barrier Function has form:
 
 ![c3bf](fig/pc3bf.svg)
@@ -60,3 +61,39 @@ So finally w need to check if random variable $c_{h}(x,u) \geq 0$ with some requ
 This condition can be written as:
 
 ![c3bf](fig/probabilistic_condition.svg)
+
+## How to run?
+### Docker
+Build image:
+```bash
+docker build -t ros2_dev:humble .
+```
+
+Run docker container:
+```bash
+xhost +local:docker
+
+docker run -it \
+    --name ros2-rc3bf \
+    --env="DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    --volume="${HOME}/.Xauthority:/root/.Xauthority:rw" \
+    --env="XAUTHORITY=/root/.Xauthority" \
+    --volume="/yout/paths/robust_c3cbf:/dev/ros_ws:rw" \
+    --net=host \
+    ros:humble \
+    bash
+```
+
+### Build ROS2 Node
+```bash
+colcon build
+source install/setup.bash
+```
+
+### Run
+This command runs two robot nodes on collision trajectories.
+```bash
+ros2 launch rc3bf two_robots_straight_line.launch.py
+```
