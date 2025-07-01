@@ -18,7 +18,7 @@ RUN apt update && apt install -y \
     ros-humble-rviz2 \
     ros-dev-tools \
     && apt clean \
-    && pip3 install pytransform3d
+    && pip3 install pytransform3d numpy scipy
 
 # Add ROS user
 RUN useradd -m -s /bin/bash rosuser && \
