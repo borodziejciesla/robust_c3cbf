@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Float32
 
 # from pytransform3d.rotations import (
 #     matrix_from_euler_xyz,
@@ -70,7 +71,6 @@ class Robot(Node):
             kp_linear=kp_linear, kp_angular=kp_angular
         )
         self.safety_filter = SafetyFilter(
-            robot_linear_speed_vr=1.0,
             obstacle_radius_r=robot_radius,  # rad/s
             epsilon=0.01,  # m/s^2
         )
@@ -80,6 +80,14 @@ class Robot(Node):
             PoseStamped, "robot_pose", 10
         )
         self.frame_id = "map"
+
+        self.publisher_v = self.create_publisher(Float32, "v", 10)
+        self.publisher_omega = self.create_publisher(
+            Float32, "omega", 10
+        )
+
+        self.publisher_h = self.create_publisher(Float32, "h", 10)
+        self.publisher_hp = self.create_publisher(Float32, "hp", 10)
 
         ######### Subscriber #########
         self.subscription = self.create_subscription(
@@ -92,14 +100,12 @@ class Robot(Node):
 
     def timer_callback(self):
         x, y, theta = self.motion_simulator.get_state()
-        # self.get_logger().info(
-        #     f"Current state: x={x}, y={y}, theta={theta}"
-        # )
         self.publish_pose(x, y, theta)
 
         v, yr = self.controller.compute_control(
             (x, y, theta), self.target_position
         )
+        # v = np.minimum(v, 1.0)  # Limit linear speed to 1.0 m/s
 
         robot_pose = np.array([x, y, theta])
         # obstacle_pose = np.array([20.0, 20.0])
@@ -111,20 +117,35 @@ class Robot(Node):
                 self.obstacle_pose,
                 self.obstacle_velocity,
                 yr,
+                v,
             )
+            yr = yr_safe
 
+            msg_h = Float32()
+            msg_h.data = float(self.safety_filter.h())
+            self.publisher_h.publish(msg_h)
+
+            msg_hp = Float32()
+            msg_hp.data = float(float(self.safety_filter.h_prim(0.0)))
+            self.publisher_hp.publish(msg_hp)
+
+        self.motion_simulator.step(v, yr)
+
+        if not np.isnan(v):
             self.get_logger().info(
                 f"Control: h={self.safety_filter.h()}, h_prim={self.safety_filter.h_prim(0)}"
             )
 
-            if np.abs(yr - yr_safe) > 0.0:
-                self.get_logger().info(
-                    f"Control: u_safe={yr_safe}, u={yr}"
-                )
+            msg_v = Float32()
+            msg_v.data = float(v)
+            self.publisher_v.publish(msg_v)
 
-            yr = yr_safe
+        if not np.isnan(yr):
+            self.get_logger().info(f"Control: u_safe={yr}")
 
-        self.motion_simulator.step(v, yr)
+            msg_omega = Float32()
+            msg_omega.data = float(yr)
+            self.publisher_omega.publish(msg_omega)
 
     def listener_callback(self, msg):
         self.obstacle_velocity[0] = (
