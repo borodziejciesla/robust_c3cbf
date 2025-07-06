@@ -69,24 +69,34 @@ for index = 1:5:length(robot_1_x)
     delete(h2)
 end
 
-distance = sqrt((robot_1_x(1:end)-robot_2_x(1:end)).^2 + (robot_1_y(1:end)-robot_2_y(1:end)).^2);
+%% Plot distance between robots
+distance = sqrt((robot_1_x(1:end)-robot_2_x(1:end-2)).^2 + (robot_1_y(1:end)-robot_2_y(1:end-2)).^2);
 figure;
 grid on;
 hold on;
-plot(distance);
+xlabel("Index [-]");
+ylabel("Distance [m]");
+plot(distance, "LineWidth", 2);
+legend("show");
 
+%% Plot robots positions
 figure;
 subplot(2, 1, 1);
 grid on;
 hold on;
-plot(robot_1_x, 'r');
-plot(robot_2_x, 'b');
-plot(zeros(size(robot_1_x)), 'r:', 'LineWidth',2)
-plot(5*ones(size(robot_2_x)), 'b:', 'LineWidth',2)
+xlabel("Index [-]");
+ylabel("x [m]");
+plot(robot_1_x, 'r', 'LineWidth', 2, "DisplayName", "Robot 1 x position");
+plot(robot_2_x, 'b', 'LineWidth', 2, "DisplayName", "Robot 2 x position");
+plot(zeros(size(robot_1_x)), 'r:', 'LineWidth', 2, "DisplayName", "Robot 1 x desired position")
+plot(5*ones(size(robot_2_x)), 'b:', 'LineWidth', 2, "DisplayName", "Robot 2 x desired position")
+legend("show");
 subplot(2, 1, 2);
 grid on;
 hold on;
-plot(robot_1_y, 'r');
-plot(robot_2_y, 'b');
-plot(10*ones(size(robot_1_y)), 'r:', 'LineWidth',2)
-plot(5*ones(size(robot_2_y)), 'b:', 'LineWidth',2)
+xlabel("Index [-]");
+ylabel("y [m]");
+plot(robot_1_y, 'r', 'LineWidth', 2,  "DisplayName", "Robot 1 y position");
+plot(robot_2_y, 'b', 'LineWidth', 2,  "DisplayName", "Robot 2 y position");
+plot(10*ones(size(robot_1_y)), 'r:', 'LineWidth', 2, "DisplayName", "Robot 1 y desired position")
+plot(5*ones(size(robot_2_y)), 'b:', 'LineWidth', 2, "DisplayName", "Robot 2 y desired position")

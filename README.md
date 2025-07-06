@@ -32,6 +32,14 @@ Example trajectory of two robots in colision course is presented below:
 
 ![trajectories](scripts/robot_trajectory.gif)
 
+Position of robots:
+
+![trajectories](fig/robot_position.png)
+
+Distance between robots (each robot has 0.5 meter radius):
+
+![trajectories](fig/distance.png)
+
 ### Probabilistic Colision Cone Conrtol Barrier Function (PC3BF)
 Assume that $p_r \sim (\hat{p}_{r}, \Sigma_{p})$ and $v_r \sim (\hat{v}_{r}, \Sigma_{v})$ then uncertain Control Barrier Function has form:
 

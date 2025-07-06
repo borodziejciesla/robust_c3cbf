@@ -98,7 +98,7 @@ class SafetyFilter:
         self.v_r = v_r
 
         # Define constrains
-        alpha = 1.0  # Safety margin
+        alpha = 0.1  # Safety margin
 
         def constraint(u):
             self._calculate_relative_vectors(u)
