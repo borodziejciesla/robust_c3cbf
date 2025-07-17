@@ -5,7 +5,8 @@ class MotionSimulator:
     def __init__(self, initial_position=(0.0, 0.0, 0.0), dt=0.1):
         """
         Initialize the simulator.
-        :param initial_position: Tuple (x, y, theta) representing the initial position and orientation.
+        :param initial_position: Tuple (x, y, theta) representing the
+            initial position and orientation.
         :param dt: Time step for the simulation.
         """
         self.x, self.y, self.theta = initial_position

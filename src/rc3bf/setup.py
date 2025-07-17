@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = "rc3bf"
 
@@ -16,6 +18,7 @@ setup(
             "share/" + package_name + "/launch",
             ["launch/two_robots_straight_line.launch.py"],
         ),
+        (os.path.join('share', package_name, 'test'), glob('test/*.py')),
     ],
     install_requires=[
         "setuptools",

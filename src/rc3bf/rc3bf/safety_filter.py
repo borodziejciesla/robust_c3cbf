@@ -3,9 +3,8 @@ from scipy.optimize import minimize
 
 
 class SafetyFilter:
-    """
-    Implements Control Barrier Function (CBF) of type Collision Cone
-    for a unidirectional robot and a moving obstacle.
+    """Implements Control Barrier Function (CBF) of type Collision Cone.
+    For a unidirectional robot and a moving obstacle.
     Robot model:
     [x_r'; y_r'; theta_r'] = [v_r*cos(theta_r); v_r*sin(theta_r); u]
     where v_r is constant, and u is the control signal.
@@ -20,8 +19,7 @@ class SafetyFilter:
         obstacle_radius_r: float,
         epsilon: float = 1e-6,
     ):
-        """
-        Initializes the SafetyFilter with robot speed and obstacle radius.
+        """Initialize the SafetyFilter with robot speed and obstacle radius.
 
         Args:
             obstacle_radius_r (float): Radius of the obstacle (r).
@@ -80,8 +78,7 @@ class SafetyFilter:
         u_nominal: float,
         v_r: float,
     ) -> float:
-        """
-        Runs safety filter
+        """Run safety filter.
 
         Args:
             robot_state (np.ndarray): robot pose [x_r, y_r, theta_r].
@@ -117,20 +114,21 @@ class SafetyFilter:
         self.u_nom = u_nominal
 
         # Minimize the objective function
-        u_safe = minimize(
+        u_safe_result = minimize(
             self.objective_function, self.u_nom, constraints=cons
         )
 
-        self._calculate_relative_vectors(u_safe.x)
-
-        return u_safe.x
+        if u_safe_result.success:
+            self._calculate_relative_vectors(u_safe_result.x)
+            return u_safe_result.x
+        else:
+            return None
 
     def objective_function(self, u: float) -> float:
         return (self.u_nom - u) ** 2
 
     def _calculate_relative_vectors(self, u: float):
-        """
-        Calculates relative position, velocity, and acceleration vectors
+        """Calculates relative position, velocity, and acceleration vectors.
 
         Args:
             u (float): nominal control.
@@ -155,8 +153,7 @@ class SafetyFilter:
         )
 
     def h(self) -> float:
-        """
-        Calculate barrier function value h(x)
+        """Calculate barrier function value h(x).
 
         Returns:
             float: h(x)
@@ -168,8 +165,7 @@ class SafetyFilter:
         )
 
     def h_prim(self, u: float) -> float:
-        """
-        Calculate h derivative value
+        """Calculate h derivative value.
 
         Args:
             u (float): control input.
@@ -178,7 +174,7 @@ class SafetyFilter:
             float: h(x) derivative value
         """
 
-        return float(
+        result = (
             np.dot(self.v.T, self.v)
             + np.dot(self.p.T, self.a)
             + np.dot(self.v.T, self.a)
@@ -190,3 +186,4 @@ class SafetyFilter:
                 np.linalg.norm(self.p) ** 2 - self.r**2 + self.epsilon
             )
         )
+        return float(result.item())
