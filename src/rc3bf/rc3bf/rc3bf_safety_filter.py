@@ -1,51 +1,34 @@
 import numpy as np
 from scipy.optimize import minimize
+from scipy.stats import norm
 
-from safety_filter.safety_filter_base import SafetyFilterBase
 
-
-class RobustSafetyFilter(SafetyFilterBase):
-    """
-    Implements Control Barrier Function (CBF) of type Collision Cone
-    for a unidirectional robot and a moving obstacle.
-    Robot model:
-    [x_r'; y_r'; theta_r'] = [v_r*cos(theta_r); v_r*sin(theta_r); u]
-    where v_r is constant, and u is the control signal.
-    Barrier function:
-    h(x) = <p,v> + ||v|| * sqrt(||p||^2 - r^2)
-    where p is the relative position, and v is the relative velocity.
-    r is the obstacle radius.
-    where v_r is constant, and u is the control signal.
-    Barrier function:
-    h(x) = <p,v> + ||v|| * sqrt(||p||^2 - r^2)
-    where p is the relative position, and v is the relative velocity.
-    r is the obstacle radius.
-    """
-
+class RobustSafetyFilter:
     def __init__(
         self,
-        robot_linear_speed_vr: float,
         obstacle_radius_r: float,
-        delta: float = 0.01,
         epsilon: float = 1e-6,
     ):
-        """
-        Initializes the RobustSafetyFilter with speed and obstacle radius.
+        if obstacle_radius_r <= 0.0:
+            raise ValueError(
+                "Obstacle radius must be greater than zero for stability."
+            )
+        if epsilon <= 0.0:
+            raise ValueError(
+                "Epsilon must be greater than zero for numerical stability."
+            )
 
-        Args:
-            robot_linear_speed_vr (float): robot linear speed (v_r).
-            obstacle_radius_r (float): Radius of the obstacle (r).
-            delta (float): acceptable failure margin.
-            epsilon (float): Small value added to denominators to prevent
-                             division by zero in case of zero norms.
+        self.r = obstacle_radius_r
+        self.epsilon = epsilon
 
-        Raises:
-            ValueError: If obstacle_radius_r or epsilon is less than or equal to zero.
-        """
-        super().__init__(
-            robot_linear_speed_vr, obstacle_radius_r, epsilon
-        )
-        self.delta = delta
+        self.u_nom = 0.0
+        self.robot_pose = np.array([0.0, 0.0, 0.0])
+        self.obstacle_position = np.array([0.0, 0.0])
+        self.obstacle_velocity = np.array([0.0, 0.0])
+
+        self.p = np.array([0.0, 0.0])
+        self.v = np.array([0.0, 0.0])
+        self.a = np.array([0.0, 0.0])
 
     def run_filter(
         self,
@@ -53,66 +36,58 @@ class RobustSafetyFilter(SafetyFilterBase):
         obstacle_pos,
         obstacle_vel,
         u_nominal: float,
+        v_r: float,
     ) -> float:
-        """
-        Runs safety filter
-
-        Args:
-            robot_state (np.ndarray): robot pose [x_r, y_r, theta_r].
-            obstacle_pos (np.ndarray): obstacle position [x_o, y_o].
-            obstacle_vel (np.ndarray): obstacle velocity [v_ox, v_oy].
-
-        Returns:
-            float: barrier function value h(x).
-        """
-        # Update robot state and obstacle state
         self.robot_pose = robot_pose
         self.obstacle_position = obstacle_pos
         self.obstacle_velocity = obstacle_vel
+        self.v_r = v_r
 
-        # Define constrains
-        alpha = 1.0  # Safety margin
+        alpha = 0.1  # Safety margin
 
         def constraint(u):
             self._calculate_relative_vectors(u)
-            return self.h_prim(u) + alpha * self.h() - 1.0
+            sigma = self.sigma_h()
+            val = self.h_prim(u) + alpha * self.h() - norm.ppf(0.95) * sigma
+            # Zwracamy tablicę 1D, bo scipy minimize wymaga tego formatu
+            return np.array([val])
 
         cons = [
             {
                 "type": "ineq",
-                "fun": lambda u: constraint(
-                    u
-                ),  # h'(x) + alpha * h(x) >= 0
+                "fun": constraint,
             }
         ]
 
-        # Initial point
         self.u_nom = u_nominal
 
-        # Minimize the objective function
-        u_safe = minimize(
-            self.objective_function, self.u_nom, constraints=cons
+        result = minimize(
+            self.objective_function,
+            np.array([self.u_nom]),  # przekazujemy 1D array jako punkt startowy
+            constraints=cons,
+            method='SLSQP',
         )
 
-        self._calculate_relative_vectors(u_safe.x)
+        # Bezpiecznie wyciągamy wynik
+        if result.success:
+            u_safe = result.x[0]  # z 1-elementowego array bierzemy float
+        else:
+            # W razie niepowodzenia, daj nominalną wartość
+            u_safe = self.u_nom
 
-        return u_safe.x
+        self._calculate_relative_vectors(u_safe)
+        return u_safe
 
-    def objective_function(self, u: float) -> float:
-        return (self.u_nom - u) ** 2
+    def objective_function(self, u):
+        # u może być array (np. 1D array), więc u[0]
+        val = (self.u_nom - u[0]) ** 2
+        return val
 
-    def _calculate_relative_vectors(self, u: float):
-        """
-        Calculates relative position, velocity, and acceleration vectors
-
-        Args:
-            u (float): nominal control.
-        """
+    def _calculate_relative_vectors(self, u):
         x_r, y_r, theta_r = self.robot_pose
         x_o, y_o = self.obstacle_position
         vx_o, vy_o = self.obstacle_velocity
 
-        # Relative position
         self.p = np.array([x_o - x_r, y_o - y_r])
         self.v = np.array(
             [
@@ -128,38 +103,51 @@ class RobustSafetyFilter(SafetyFilterBase):
         )
 
     def h(self) -> float:
-        """
-        Calculate barrier function value h(x)
-
-        Returns:
-            float: h(x)
-        """
         return float(
-            np.dot(self.p.T, self.v)
+            np.dot(self.p, self.v)
             + np.linalg.norm(self.v)
-            * np.sqrt(np.linalg.norm(self.p) ** 2 - self.r**2)
+            * np.sqrt(max(np.linalg.norm(self.p) ** 2 - self.r ** 2, 1e-6))
         )
 
     def h_prim(self, u: float) -> float:
-        """
-        Calculate h derivative value
-
-        Args:
-            u (float): control input.
-
-        Returns:
-            float: h(x) derivative value
-        """
-
         return float(
-            np.dot(self.v.T, self.v)
-            + np.dot(self.p.T, self.a)
-            + np.dot(self.v.T, self.a)
-            * np.sqrt(np.linalg.norm(self.p) ** 2 - self.r**2)
+            np.dot(self.v, self.v)
+            + np.dot(self.p, self.a)
+            + np.dot(self.v, self.a)
+            * np.sqrt(max(np.linalg.norm(self.p) ** 2 - self.r ** 2, 1e-6))
             / (np.linalg.norm(self.p) + self.epsilon)
-            + np.dot(self.p.T, self.v)
+            + np.dot(self.p, self.v)
             * np.linalg.norm(self.v)
-            / np.sqrt(
-                np.linalg.norm(self.p) ** 2 - self.r**2 + self.epsilon
-            )
+            / np.sqrt(max(np.linalg.norm(self.p) ** 2 - self.r ** 2, 1e-6))
         )
+
+    def sigma_h(self) -> float:
+        delta = np.sqrt(max(np.linalg.norm(self.p) ** 2 - self.r ** 2, 1e-6))
+
+        # Poprawiona implementacja - wektory gradientów
+        nabla_pr_h = self.v + (np.linalg.norm(self.v) / delta) * self.p
+        nabla_vr_h = self.p + (delta / np.linalg.norm(self.v)) * self.v
+
+        # Druga pochodna lub poprawka gradientów
+        # Z uwagi na oryginalny kod, uprościłem dla przykładu:
+        nabla_pr_hp = (
+            (np.linalg.norm(self.v) / delta) * self.v
+            - (np.linalg.norm(self.v) * np.dot(self.p, self.v) * self.p) / delta**3
+        )
+        nabla_vr_hp = (
+            2 * self.v
+            + (np.linalg.norm(self.v) * self.p + np.dot(self.p, self.v) * self.v
+                / np.linalg.norm(self.v))
+            / delta
+        )
+
+        sigma_p = np.array([[0.1, 0.0], [0.0, 0.1]])
+        sigma_v = np.array([[0.1, 0.0], [0.0, 0.1]])
+
+        sp = nabla_pr_h + nabla_pr_hp
+        sv = nabla_vr_h + nabla_vr_hp
+
+        # Wynik musi być skalarem
+        s = sp.T @ sigma_p @ sp + sv.T @ sigma_v @ sv
+        s_scalar = float(s)  # wymuszamy float, a nie tablicę
+        return s_scalar

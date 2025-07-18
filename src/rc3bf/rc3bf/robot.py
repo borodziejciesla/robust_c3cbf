@@ -3,17 +3,13 @@ from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Float32
 
-# from pytransform3d.rotations import (
-#     matrix_from_euler_xyz,
-#     quaternion_from_matrix,
-# )
-import math
-import time
 import numpy as np
 
 from .motion_simulator import MotionSimulator
 from .base_controller import HolonomicMobileRobotController
-from .safety_filter import SafetyFilter
+
+# from .safety_filter import SafetyFilter
+from .rc3bf_safety_filter import RobustSafetyFilter
 
 
 class Robot(Node):
@@ -25,7 +21,7 @@ class Robot(Node):
             timer_period, self.timer_callback
         )
 
-        ######### Read parameters #########
+        # Read parameters
         self.declare_parameter("sampling_time", 0.1)
         sampling_time = self.get_parameter("sampling_time").value
 
@@ -59,23 +55,23 @@ class Robot(Node):
         self.use_cbf = self.get_parameter("use_cbf").value
         self.get_logger().info(f": h={self.use_cbf}")
 
-        ######### Internal Variables #########
+        # Internal Variables
         self.obstacle_pose = np.array([0.0, 0.0])  # [x, y]
         self.obstacle_velocity = [0.0, 0.0]  # [vx, vy]
 
-        ######### Initialization code #########
+        # Initialization code
         self.motion_simulator = MotionSimulator(
             initial_position=initial_position, dt=sampling_time
         )
         self.controller = HolonomicMobileRobotController(
             kp_linear=kp_linear, kp_angular=kp_angular
         )
-        self.safety_filter = SafetyFilter(
+        self.safety_filter = RobustSafetyFilter(
             obstacle_radius_r=robot_radius,  # rad/s
             epsilon=0.01,  # m/s^2
         )
 
-        ######### Publisher for pose #########
+        # Publisher for pose
         self.pose_publisher = self.create_publisher(
             PoseStamped, "robot_pose", 10
         )
@@ -89,7 +85,7 @@ class Robot(Node):
         self.publisher_h = self.create_publisher(Float32, "h", 10)
         self.publisher_hp = self.create_publisher(Float32, "hp", 10)
 
-        ######### Subscriber #########
+        # Subscriber
         self.subscription = self.create_subscription(
             PoseStamped,
             "/" + robot_obstacle_name + "/robot_pose",
@@ -119,15 +115,24 @@ class Robot(Node):
                 yr,
                 v,
             )
-            yr = yr_safe
+            if yr_safe is None:
+                self.get_logger().warn(
+                    "Safety filter returned None, setting yr to 0.0"
+                )
+                yr_safe = 0.0
+                v = 0.0
+            else:
+                yr = yr_safe
 
-            msg_h = Float32()
-            msg_h.data = float(self.safety_filter.h())
-            self.publisher_h.publish(msg_h)
+                msg_h = Float32()
+                msg_h.data = float(self.safety_filter.h())
+                self.publisher_h.publish(msg_h)
 
-            msg_hp = Float32()
-            msg_hp.data = float(float(self.safety_filter.h_prim(0.0)))
-            self.publisher_hp.publish(msg_hp)
+                msg_hp = Float32()
+                msg_hp.data = float(
+                    float(self.safety_filter.h_prim(0.0))
+                )
+                self.publisher_hp.publish(msg_hp)
 
         self.motion_simulator.step(v, yr)
 
