@@ -10,6 +10,7 @@ from .base_controller import HolonomicMobileRobotController
 
 # from .safety_filter import SafetyFilter
 from .rc3bf_safety_filter import RobustSafetyFilter
+from .safety_filter import SafetyFilter
 
 
 class Robot(Node):
@@ -55,6 +56,12 @@ class Robot(Node):
         self.use_cbf = self.get_parameter("use_cbf").value
         self.get_logger().info(f": h={self.use_cbf}")
 
+        self.declare_parameter("filter_type", "c3bf")
+        filter_type = self.get_parameter("filter_type").value
+
+        self.declare_parameter("add_noise", True)
+        self.add_noise = self.get_parameter("add_noise").value
+
         # Internal Variables
         self.obstacle_pose = np.array([0.0, 0.0])  # [x, y]
         self.obstacle_velocity = [0.0, 0.0]  # [vx, vy]
@@ -66,10 +73,19 @@ class Robot(Node):
         self.controller = HolonomicMobileRobotController(
             kp_linear=kp_linear, kp_angular=kp_angular
         )
-        self.safety_filter = RobustSafetyFilter(
-            obstacle_radius_r=robot_radius,  # rad/s
-            epsilon=0.01,  # m/s^2
-        )
+
+        if filter_type == "c3bf":
+            self.safety_filter = SafetyFilter(
+                obstacle_radius_r=robot_radius,  # rad/s
+                epsilon=0.01,  # m/s^2
+            )
+        elif filter_type == "rc3bf":
+            self.safety_filter = RobustSafetyFilter(
+                obstacle_radius_r=robot_radius,  # rad/s
+                epsilon=0.01,  # m/s^2
+            )
+        else:
+            raise ValueError(f"Unknown filter type: {filter_type}")
 
         # Publisher for pose
         self.pose_publisher = self.create_publisher(
@@ -96,6 +112,10 @@ class Robot(Node):
 
     def timer_callback(self):
         x, y, theta = self.motion_simulator.get_state()
+        if self.add_noise:
+            # Add noise to the robot pose
+            x = x + np.random.normal(loc=0.0, scale=0.01)
+            y = y + np.random.normal(loc=0.0, scale=0.01)
         self.publish_pose(x, y, theta)
 
         v, yr = self.controller.compute_control(

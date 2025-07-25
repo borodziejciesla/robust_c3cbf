@@ -70,6 +70,20 @@ This condition can be written as:
 
 ![c3bf](fig/probabilistic_condition.svg)
 
+
+Example trajectory of two robots in colision course is presented below:
+
+![trajectories](scripts/robot_trajectory_robust.gif)
+
+Position of robots:
+
+![trajectories](fig/robot_position_robust2.png)
+
+Distance between robots (each robot has 0.5 meter radius):
+
+![trajectories](fig/distance_robust.png)
+
+
 ## How to run?
 ### Docker
 Build image:

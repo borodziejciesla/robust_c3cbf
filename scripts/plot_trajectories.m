@@ -70,7 +70,8 @@ for index = 1:5:length(robot_1_x)
 end
 
 %% Plot distance between robots
-distance = sqrt((robot_1_x(1:end)-robot_2_x(1:end-2)).^2 + (robot_1_y(1:end)-robot_2_y(1:end-2)).^2);
+common_size = min(length(robot_1_x), length(robot_2_x));
+distance = sqrt((robot_1_x(1:common_size)-robot_2_x(1:common_size)).^2 + (robot_1_y(1:common_size)-robot_2_y(1:common_size)).^2);
 figure;
 grid on;
 hold on;
