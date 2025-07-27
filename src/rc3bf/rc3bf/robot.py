@@ -9,7 +9,7 @@ from .motion_simulator import MotionSimulator
 from .base_controller import HolonomicMobileRobotController
 
 # from .safety_filter import SafetyFilter
-from .rc3bf_safety_filter import RobustSafetyFilter
+from .robust_safety_filter import RobustSafetyFilter
 from .safety_filter import SafetyFilter
 
 
@@ -57,7 +57,7 @@ class Robot(Node):
         self.get_logger().info(f": h={self.use_cbf}")
 
         self.declare_parameter("filter_type", "c3bf")
-        filter_type = self.get_parameter("filter_type").value
+        self.filter_type = self.get_parameter("filter_type").value
 
         self.declare_parameter("add_noise", True)
         self.add_noise = self.get_parameter("add_noise").value
@@ -74,18 +74,20 @@ class Robot(Node):
             kp_linear=kp_linear, kp_angular=kp_angular
         )
 
-        if filter_type == "c3bf":
+        if self.filter_type == "c3bf":
             self.safety_filter = SafetyFilter(
                 obstacle_radius_r=robot_radius,  # rad/s
                 epsilon=0.01,  # m/s^2
             )
-        elif filter_type == "rc3bf":
+        elif self.filter_type == "rc3bf":
             self.safety_filter = RobustSafetyFilter(
                 obstacle_radius_r=robot_radius,  # rad/s
                 epsilon=0.01,  # m/s^2
             )
         else:
-            raise ValueError(f"Unknown filter type: {filter_type}")
+            raise ValueError(
+                f"Unknown filter type: {self.filter_type}"
+            )
 
         # Publisher for pose
         self.pose_publisher = self.create_publisher(
@@ -128,13 +130,30 @@ class Robot(Node):
         # obstacle_vel = np.array([0.0, 0.0])
 
         if self.use_cbf:
-            yr_safe = self.safety_filter.run_filter(
-                robot_pose,
-                self.obstacle_pose,
-                self.obstacle_velocity,
-                yr,
-                v,
-            )
+            if self.filter_type == "c3bf":
+                yr_safe = self.safety_filter.run_filter(
+                    robot_pose,
+                    self.obstacle_pose,
+                    self.obstacle_velocity,
+                    yr,
+                    v,
+                )
+            elif self.filter_type == "rc3bf":
+                yr_safe = self.safety_filter.run_filter(
+                    robot_pose,
+                    np.array([[0.01, 0.0], [0.0, 0.01]]),
+                    self.obstacle_pose,
+                    np.array([[0.01, 0.0], [0.0, 0.01]]),
+                    self.obstacle_velocity,
+                    np.array([[0.01, 0.0], [0.0, 0.01]]),
+                    yr,
+                    v,
+                )
+            else:
+                raise ValueError(
+                    f"Unknown filter type: {self.filter_type}"
+                )
+
             if yr_safe is None:
                 self.get_logger().warn(
                     "Safety filter returned None, setting yr to 0.0"
