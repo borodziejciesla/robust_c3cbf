@@ -27,8 +27,9 @@ jobs:
         sudo apt update
         sudo apt install -y python3-colcon-common-extensions \
                             python3-pip \
+                            colcon-cli \
                             ros-humble-rmw-cyclonedds-cpp
-        pip install -U vcstool
+        pip install -U vcstool colcon-common-extensions
 
     - name: Import dependencies from rosinstall (if exists)
       run: |
@@ -39,13 +40,18 @@ jobs:
     - name: Install ROS package dependencies
       run: |
         sudo apt update
+        sudo rosdep init || true
         rosdep update
         rosdep install --from-paths src --ignore-src -r -y
 
     - name: Build the workspace
       run: |
         source /opt/ros/humble/setup.bash
-        colcon build --event-handlers console_direct+
+        if [ -d src ] && [ "$(ls -A src)" ]; then
+          colcon build --event-handlers console_direct+log+
+        else
+          echo "No packages to build"
+        fi
 
     - name: Run tests
       run: |
