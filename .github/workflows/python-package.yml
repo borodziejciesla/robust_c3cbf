@@ -1,0 +1,58 @@
+name: ROS 2 CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up ROS 2 Humble
+      uses: ros-tooling/setup-ros@v0.7
+      with:
+        required-ros-distributions: humble
+
+    - name: Install ROS 2 dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-colcon-common-extensions \
+                            python3-pip \
+                            ros-humble-rmw-cyclonedds-cpp
+        pip install -U vcstool
+
+    - name: Import dependencies from rosinstall (if exists)
+      run: |
+        if [ -f dependencies.repos ]; then
+          vcs import src < dependencies.repos
+        fi
+
+    - name: Install ROS package dependencies
+      run: |
+        sudo apt update
+        rosdep update
+        rosdep install --from-paths src --ignore-src -r -y
+
+    - name: Build the workspace
+      run: |
+        source /opt/ros/humble/setup.bash
+        colcon build --event-handlers console_direct+
+
+    - name: Run tests
+      run: |
+        source /opt/ros/humble/setup.bash
+        source install/setup.bash
+        colcon test --event-handlers console_direct+
+
+    - name: Test result summary
+      run: |
+        colcon test-result --verbose
