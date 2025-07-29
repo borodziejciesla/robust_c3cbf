@@ -27,8 +27,9 @@ jobs:
         sudo apt update
         sudo apt install -y python3-colcon-common-extensions \
                             python3-pip \
+                            colcon-cli \
                             ros-humble-rmw-cyclonedds-cpp
-        pip install -U colcon-common-extensions vcstool
+        pip install -U vcstool colcon-common-extensions
 
     - name: Import dependencies from rosinstall (if exists)
       run: |
