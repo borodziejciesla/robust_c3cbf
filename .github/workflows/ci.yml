@@ -31,6 +31,7 @@ jobs:
                             ros-humble-rmw-cyclonedds-cpp
         pip install -U vcstool python3-colcon-common-extensions
 
+
     - name: Import dependencies from rosinstall (if exists)
       run: |
         if [ -f dependencies.repos ]; then
