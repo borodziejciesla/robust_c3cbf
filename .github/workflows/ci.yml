@@ -29,7 +29,7 @@ jobs:
                             python3-pip \
                             colcon-cli \
                             ros-humble-rmw-cyclonedds-cpp
-        pip install -U vcstool colcon-common-extensions
+        pip install -U vcstool python3-colcon-common-extensions
 
     - name: Import dependencies from rosinstall (if exists)
       run: |
