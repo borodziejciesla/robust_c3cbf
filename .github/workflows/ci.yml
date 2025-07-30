@@ -25,11 +25,10 @@ jobs:
     - name: Install ROS 2 dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-colcon-common-extensions \
-                            python3-pip \
+        sudo apt-get install -y python3-pip \
                             colcon-cli \
                             ros-humble-rmw-cyclonedds-cpp
-        pip install -U vcstool
+        pip install -U vcstool python3-colcon-common-extensions
 
 
     - name: Import dependencies from rosinstall (if exists)
