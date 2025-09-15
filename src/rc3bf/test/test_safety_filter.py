@@ -83,3 +83,7 @@ class TestSafetyFilter(unittest.TestCase):
     def test_invalid_epsilon(self):
         with self.assertRaises(ValueError):
             SafetyFilter(obstacle_radius_r=0.5, epsilon=-1e-6)
+
+
+if __name__ == "__main__":
+    unittest.main()
