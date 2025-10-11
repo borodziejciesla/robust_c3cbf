@@ -513,12 +513,71 @@ Autonomous Driving Toolbox, second on real robots.
         
     %==========================================================================
     \subsection{Simulations}
-    MATLAB, Autonomous Driving
+            %------------------------------------------------------------------
+            \subsubsection{Unicycle Model Simulations}
+            The unicycle model was tested in a~scenario where two robots are one
+            colision course. Both robots are controlled by the same
+            controller, which is a~combination of a~CBF and a~nominal
+            controller. Each robot has a~goal position to reach, which is
+            located on the opposite side of the other robot. The robots start
+            have access to own position and velocity, as well as noisy
+            measurements of the other robot's position and velocity. The noise
+            is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+            and $0.2 m/s$ for position and velocity, respectively.
+
+            Simulation results, trajectories of both robots, for different
+            values of $\alpha$ (from equation \ref{eq:safety_equation}) are
+            presented in Figure~\ref{fig:unicycle_trajectories}. It can be
+            observed that the robots trajectories are diverge from the straight
+            line produced by the nominal controller, to avoid colision.
+            \begin{figure}[H]
+            \begin{center}
+                \includegraphics[width=1.0\linewidth]{fig/trajectories.eps}
+                \caption{Schematic of unicycle model.} 
+                \label{fig:unicycle_trajectories}
+            \end{center}
+            \end{figure}
+            The distance between robots during the simulation is presented in
+            Figure~\ref{fig:unicycle_distances}.
+            As can be seen, the distance between robots is always greater than
+            the safety distance (1 m), which means that the collision is avoided.
+            The distance is larger for smaller values of $\alpha$, which means
+            that the robots are more conservative in their motion.
+            \begin{figure}[H]
+            \begin{center}
+                \includegraphics[width=1.0\linewidth]{fig/distance.eps}
+                \caption{Distance between robots.} 
+                \label{fig:unicycle_distances}
+            \end{center}
+            \end{figure}
+
     %==========================================================================
     \subsection{Real Experiments}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}\label{sec:summary}
+This paper presented the Probabilistic Collision Cone Control Barrier Function
+(PCC-CBF) — a~novel framework for enforcing safety in autonomous systems
+operating under perception uncertainty. By combining the geometric concept of
+the Collision Cone with Control Barrier Functions and extending it to
+a~probabilistic formulation, the proposed method provides formal safety
+guarantees in the presence of noisy or uncertain state estimates.
+
+The PCC-CBF reformulates the collision avoidance condition as a~chance
+constraint, ensuring that the probability of collision remains below a~specified
+risk threshold. Using Gaussian models of uncertainty in relative position and
+velocity, we derived a~tractable, closed-form safety condition that can be
+integrated into standard quadratic programming–based controllers for real-time
+operation.
+
+Simulation studies on unicycle and bicycle models demonstrate that the proposed
+framework successfully maintains safe trajectories while preserving control
+performance, even when state estimates are corrupted by noise.
+%Preliminaryreal-world experiments further confirm the method’s robustness and applicability.
+
+Future work will focus on extending the PCC-CBF framework to multi-agent
+scenarios, incorporating time-varying uncertainty estimates from Bayesian
+perception pipelines, and validating the approach in large-scale outdoor experiments.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{abbrv}

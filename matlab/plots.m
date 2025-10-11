@@ -1,7 +1,8 @@
-alphas = [1];
+alphas = [1, 5, 10, 100, 1000];
 outputs = [];
 
-do_filter = false;
+do_filter = true;
+do_probabilistic_filter = true;
 
 for index = 1:length(alphas)
     alpha = alphas(index);
