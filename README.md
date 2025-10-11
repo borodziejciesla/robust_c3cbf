@@ -1,12 +1,23 @@
-# Robust Colision Cone Control Barrier Function (RC3BF)
+# Probabilistic Colision Cone Control Barrier Function (PCC-CBF)
 Implementation of Robust Colision Cone Control Barrier Function for holonomic mobile robot, with kinematic modelled with equations:
 
 ![Kinematic Model](fig/kinematic_model.svg)
 
+
 Where $v$ and $\omega$ are controll inputs.
+<!-- ==================================================================================== -->
+## Base Controller
+Base controller trajectories:
 
+![collision_cone](fig/robot_trajectory_no_filter.gif)
 
+Distance between robots:
+
+![collision_cone](fig/distance_no_filter.svg)
+
+<!-- ==================================================================================== -->
 ## Control Barrier Functions
+<!-- ------------------------------------------------------------------------------------ -->
 ### Colision Cone Conrtol Barrier Function (C3BF)
 Colision Cone Control Barrier Function is defined in following way:
 
@@ -19,6 +30,7 @@ Where $p_r$ and $v_r$ are relative position and velocity of robot and obstacle -
 And are defined in following way:
 
 ![c3bf](fig/pv_relative.svg)
+![c3bf](fig/ar.svg)
 
 To stay in safe space control needs to met following condition:
 
@@ -30,16 +42,11 @@ Where derivative is defined as:
 
 Example trajectory of two robots in colision course is presented below:
 
-![trajectories](scripts/robot_trajectory.gif)
-
-Position of robots:
-
-![trajectories](fig/robot_position.png)
-
 Distance between robots (each robot has 0.5 meter radius):
 
-![trajectories](fig/distance.png)
+![trajectories](fig/distance.svg)
 
+<!-- ------------------------------------------------------------------------------------ -->
 ### Probabilistic Colision Cone Conrtol Barrier Function (PC3BF)
 Assume that $p_r \sim (\hat{p}_{r}, \Sigma_{p})$ and $v_r \sim (\hat{v}_{r}, \Sigma_{v})$ then uncertain Control Barrier Function has form:
 
@@ -71,17 +78,17 @@ This condition can be written as:
 ![c3bf](fig/probabilistic_condition.svg)
 
 
-Example trajectory of two robots in colision course is presented below:
+Example trajectory of two robots in colision course, for different $\alpha$ values, is presented below:
 
-![trajectories](scripts/robot_trajectory_robust.gif)
+![trajectories](fig/robot_trajectory_alpha1.gif)
 
-Position of robots:
+![trajectories](fig/robot_trajectory_alpha5.gif)
 
-![trajectories](fig/robot_position_robust2.png)
+![trajectories](fig/robot_trajectory_alpha10.gif)
 
-Distance between robots (each robot has 0.5 meter radius):
+![trajectories](fig/robot_trajectory_alpha100.gif)
 
-![trajectories](fig/distance_robust.png)
+![trajectories](fig/robot_trajectory_alpha1000.gif)
 
 
 ## How to run?
