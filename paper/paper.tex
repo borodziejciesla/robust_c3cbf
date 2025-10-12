@@ -22,24 +22,24 @@
 \maketitle
 
 \begin{abstract}
-Safety is a fundamental requirement for autonomous systems operating in dynamic
-and uncertain environments. Control Barrier Functions (CBFs) have emerged as
-a~powerful tool for enforcing safety constraints in real time, but most existing
-approaches assume perfect state information, which is rarely available in
-practice due to sensor noise and perception errors. This paper introduces the
-Probabilistic Collision Cone Control Barrier Function (PCC-CBF), a~novel
-framework that explicitly accounts for uncertainty in the relative position and
-velocity of obstacles by modeling them as Gaussian random variables. The
-proposed method reformulates the classical collision cone condition as a~chance
+Safety constitutes a~fundamental requirement for autonomous systems operating in
+dynamic and uncertain environments. Control Barrier Functions (CBFs) have
+emerged as a~powerful tool for enforcing safety constraints in real time;
+however, most existing approaches rely on the assumption of perfect state
+information, which is rarely satisfied in practice due to sensor noise and
+perception errors.
+In this work, a~Probabilistic Collision Cone Control Barrier Function (PCC-CBF)
+is introduced as a~novel framework explicitly accounting for uncertainty in the
+relative position and velocity of obstacles by modeling them as Gaussian random
+variables. The classical collision cone condition is reformulated as a~chance
 constraint, ensuring that the probability of collision remains below a~specified
-risk threshold. We derive tractable conditions for chance-constrained safety and
-demonstrate the effectiveness of the PCC-CBF approach through simulations on
-unicycle and bicycle models, as well as preliminary real-world experiments.
-
-% The
-% results show that the proposed framework enables safe and efficient navigation
-% in the presence of uncertainty, providing a practical solution for robust
-% autonomous operation.
+risk threshold.
+Tractable conditions for chance-constrained safety are derived, and the
+effectiveness of the PCC-CBF framework is demonstrated through simulations on
+unicycle and bicycle models, as well as preliminary real-world experiments. The
+obtained results confirm that the proposed approach enables safe and efficient
+navigation under uncertainty, providing a~practical solution for robust
+autonomous operation.
 \end{abstract}
 
 \begin{multicols}{2}
@@ -118,7 +118,8 @@ control.
 Extensions have addressed adaptive systems, input constraints, and multi-agent
 scenarios~\cite{ames2019control} ("Control Barrier Functions: Theory and
 Applications")
-and~\cite{nguyen2016exponential} ("Exponential Control Barrier Functions for Enforcing High Relative-Degree Safety-Critical Constraints").
+and~\cite{nguyen2016exponential} ("Exponential Control Barrier Functions for
+Enforcing High Relative-Degree Safety-Critical Constraints").
 
 \textbf{Collision Cone Methods:}
 The collision cone (CC) concept, originally introduced for spacecraft and
@@ -127,17 +128,46 @@ collisions based on relative positions and
 velocities~\cite{chakravarthy1998collision}
 ("Collision cones for motion planning and collision avoidance"). Recent works
 have combined CCs with CBFs to create less conservative and more dynamically
-aware safety constraints~\cite{wang2022observer} ("Observer-Based Collision Cone Control Barrier Functions for Multi-Agent Systems") and~\cite{tayal2024collisionconeapproachcontrol} ("Collision Cone Approach Control Barrier Functions for Multi-Agent Collision Avoidance"). These approaches have demonstrated improved performance in dynamic and multi-agent environments.
+aware safety constraints~\cite{wang2022observer} ("Observer-Based Collision Cone
+Control Barrier Functions for Multi-Agent Systems")
+and~\cite{tayal2024collisionconeapproachcontrol}
+("Collision Cone Approach Control Barrier Functions for Multi-Agent Collision
+Avoidance").
+These approaches have demonstrated improved performance in dynamic and
+multi-agent
+environments.
 
 \textbf{Probabilistic Safety and Uncertainty:}
 Most classical CBF and CC-based methods assume perfect state information,
 which is unrealistic in practice. To address this, several studies have explored
-robust and probabilistic extensions. Chance-constrained CBFs~\cite{black2022probabilistic} ("Probabilistic Safety for Control Barrier Functions with Applications to Adaptive Cruise Control") and~\cite{singletary2023chance} ("Chance-Constrained Control Barrier Functions for Safety-Critical Control under Uncertainty"), as well as stochastic safety certificates~\cite{dean2020guaranteeing} ("Guaranteeing Safety of Learning-Based Control Policies in Unknown Environments"), have been proposed to account for sensor noise and estimation errors. Gaussian approximations and linearization techniques are commonly used to derive tractable safety conditions under uncertainty.
+robust and probabilistic extensions. Chance-constrained
+CBFs~\cite{black2022probabilistic}
+("Probabilistic Safety for Control Barrier Functions with Applications to 
+Adaptive Cruise Control") and~\cite{singletary2023chance}
+("Chance-Constrained Control Barrier Functions for Safety-Critical Control under
+Uncertainty"),
+as well as stochastic safety certificates~\cite{dean2020guaranteeing}
+("Guaranteeing Safety of Learning-Based Control Policies in Unknown
+Environments"),
+have been proposed to account for sensor noise and estimation errors. Gaussian approximations
+and linearization techniques are commonly used to derive tractable safety conditions under uncertainty.
 
 \textbf{Applications:}
-CBF and CC-based safety frameworks have been applied to a wide range of robotic systems, including mobile robots, autonomous vehicles, and aerial drones~\cite{ames2019control} ("Control Barrier Functions: Theory and Applications") and~\cite{wang2022observer} ("Observer-Based Collision Cone Control Barrier Functions for Multi-Agent Systems"). The integration of probabilistic safety guarantees is particularly important for real-world deployment, where perception uncertainty and dynamic obstacles are prevalent.
+CBF and CC-based safety frameworks have been applied to a wide range of robotic
+systems, including mobile robots, autonomous vehicles, and aerial
+drones~\cite{ames2019control}
+("Control Barrier Functions: Theory and Applications")
+and~\cite{wang2022observer}
+("Observer-Based Collision Cone Control Barrier Functions for Multi-Agent
+Systems").
+The integration of probabilistic safety guarantees is particularly important for
+real-world deployment, where perception uncertainty and dynamic obstacles are prevalent.
 
-In summary, while CBFs and collision cone methods provide powerful tools for safety-critical control, explicitly accounting for uncertainty remains an active area of research. The proposed Probabilistic Collision Cone Control Barrier Function (PCC-CBF) builds on these foundations to offer a tractable and robust approach for safe navigation in uncertain environments.
+In summary, while CBFs and collision cone methods provide powerful tools for
+safety-critical control, explicitly accounting for uncertainty remains an active
+area of research. The proposed Probabilistic Collision Cone Control Barrier
+Function (PCC-CBF) builds on these foundations to offer a tractable and robust
+approach for safe navigation in uncertain environments.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -194,11 +224,12 @@ where $\cos{\phi} = \frac{\sqrt{||p_{r}||^2 - r^{2}}}{||p_{r}||}$
 
 \cite{tayal2024collisionconeapproachcontrol}
 
-%//////////////
-The collision cone is a geometric concept used to predict potential collisions between two moving objects, such as vehicles or robots. It defines the set of relative velocity vectors that, if maintained, will eventually result in a collision given the current positions of the objects.
+The collision cone is a geometric concept used to predict potential collisions
+between two moving objects, such as vehicles or robots. It defines the set of
+relative velocity vectors that, if maintained, will eventually result in
+a~collision given the current positions of the objects.
 
 In more detail:
-
 Imagine two agents: an ego vehicle and an obstacle. The relative position between them is $p_r$, and the relative velocity is $v_r$.
 The collision cone is constructed by drawing lines from the ego vehicle to the edges of the obstacle, forming a cone-shaped region in velocity space.
 If the relative velocity $v_r$ lies inside this cone, the ego vehicle is on a collision course with the obstacle.
@@ -216,8 +247,8 @@ Derivative of such defeined barrier function has following form:
     \end{array}
 \end{equation}
 
-This formula will be formulated in next section to has form as in equaltion 
-\ref{eq:safety_equation}.
+This formula will be reformulated in next section to has form as in equaltion 
+\ref{eq:safety_equation}. 
 
 \begin{figure}[H]
 \begin{center}
@@ -262,8 +293,8 @@ $\hat{x}$, we obtain a~first-order approximation:
 where:
 \begin{itemize}
     \item $\delta_{p} \sim \mathcal{N}(0,\Sigma_{p})$ and $\delta_{v} \sim \mathcal{N}(0,\Sigma_{v})$,
-    \item $\nabla_{p}h(\hat{x})^{T} = v_{r}^{T} + \frac{||v_{r}||}{\Delta}p_{r}^{T}$,
-    \item $\nabla_{v}h(\hat{x})^{T} = p_{r}^{T} + \frac{\Delta}{||v_{r}||}v_{r}^{T}$,
+    \item $\nabla_{p}h(\hat{x}) = v_{r} + \frac{||v_{r}||}{\Delta}p_{r}$,
+    \item $\nabla_{v}h(\hat{x}) = p_{r} + \frac{\Delta}{||v_{r}||}v_{r}$,
     \item $\Delta = \sqrt{||p_{r}||^{2} - r^{2}}$.
 \end{itemize}
 
@@ -276,15 +307,15 @@ Similarly, the derivative $\dot{h}(x,u)$ can be expressed as:
 \]
 where:
 \begin{itemize}
-    \item $\nabla_{p} \dot{h}(\hat{x},u)^{T} = a_{r}^{T} +
-    \frac{<v_{r},a_{r}>}{||v_{r}||}\frac{p_{r}}{\Delta} +
-    \frac{||v_{r}||}{\Delta}v^{T} -
-    \frac{||v_{r}||}{\Delta^{3}}<p_{r},v_{r}>p_{r}$,
-    \item $\nabla_{v} \dot{h}(\hat{x},u)^{T} = 2v_{r} +
-    \Delta\left(\frac{a_{r}}{||v_{r}||} -
+    \item $\nabla_{p} \dot{h}(\hat{x},u) = a_{r} +
+    \frac{<v_{r},a_{r}>}{||v_{r}||\Delta}p_{r} +
+    \frac{||v_{r}||}{\Delta}v_{r} -
+    \frac{||v_{r}||<p_{r},v_{r}>}{\Delta^{3}}p_{r}$,
+    \item $\nabla_{v} \dot{h}(\hat{x},u) = 2v_{r} +
+    \Delta\left(\frac{1}{||v_{r}||}a_{r} -
     \frac{<v_{r},a_{r}>}{||v_{r}||^{3}}v_{r} \right) + \frac{1}{\Delta} \left(
     ||v_{r}||p_{r} + \frac{<p_{r}, v_{r}>}{||v_{r}||}v_{r} \right)$,
-    \item $\nabla_{a} \dot{h}(\hat{x},u)^{T} = p_{r} + \frac{\Delta}{||v_{r}||}v_{r}$.
+    \item $\nabla_{a} \dot{h}(\hat{x},u) = p_{r} + \frac{\Delta}{||v_{r}||}v_{r}$.
 \end{itemize}
 
 This allows us to represent the safety constraint \eqref{eq:safety_equation}
@@ -298,13 +329,16 @@ as a~random variable $c_{h}(x,u)$:
 where:
 \begin{itemize}
     \item $\mu_{c_{h}}$ is the mean of $c_{h}(x,u)$ random variable,
-    \item $\delta_{c_{h}}$ is a~zero-mean Gaussian random variable with variance
-    $\sigma^{2}_{c_{h}} = \left( \nabla_{p} \dot{h}(\hat{x},u) + \nabla_{p} h(\hat{x}) \right)^{T} \delta_{p}
-    + \left( \nabla_{v} \dot{h}(\hat{x},u) + \nabla_{v} h(\hat{x}) \right)^{T} \delta_{v} + \nabla_{a} \dot{h}(\hat{x},u)^{T}\delta_{a}$.
+    \item $\delta_{c_{h}}$ is a~zero-mean Gaussian random variable with variance:
+    \begin{itemize}
+        \item $\sigma^{2}_{c_{h}} = \nabla_{p}^{T}\Sigma_{p}\nabla_{p}^{T} +
+        \nabla_{v}^{T}\Sigma_{v}\nabla_{v}^{T} +
+        \nabla_{a}^{T}\Sigma_{a}\nabla_{a}^{T}  $,
+        \item $\nabla_{p} =  \nabla_{p} \dot{h}(\hat{x},u) + \nabla_{p}h(\hat{x},u)$,
+        \item $\nabla_{v} =  \nabla_{v} \dot{h}(\hat{x},u) + \nabla_{v}h(\hat{x},u)$,
+        \item $\nabla_{a} =  \nabla_{a} \dot{h}(\hat{x},u)$.
+    \end{itemize}
 \end{itemize}
-
-%  and variance $\sigma^{2}_{c_{h}} = \left( \nabla_{p} \dot{h}(\hat{x},u) + \nabla_{p} h(\hat{x}) \right)^{T} \delta_{p}
-%     + \left( \nabla_{v} \dot{h}(\hat{x},u) + \nabla_{v} h(\hat{x}) \right)^{T} \delta_{v} + \nabla_{a} \dot{h}(\hat{x},u)^{T}\delta_{a}$.
 
 Instead of requiring $c_{h}(x,u) \geq 0$ deterministically, we impose a~chance
 constraint:
@@ -313,7 +347,7 @@ constraint:
     \label{eq:chance_constraint}
 \end{equation}
 where $\nu \in (0,1)$ denotes the acceptable risk level.
-Under the Gaussian approximation, condition \eqref{eq:chance_constraint} is equivalent to
+Under the Gaussian approximation, condition \eqref{eq:chance_constraint} is equivalent to:
 \begin{equation}
     \mu_{c_{h}} - \Phi^{-1}(1-\nu) \sigma_{c_{h}} \geq 0,
     \label{eq:final_condition}
@@ -329,8 +363,8 @@ while explicitly accounting for uncertainty in perception.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}\label{sec:experiments}
-Experiments were planned in two steps: first simulations - implemented in MATLAB
-Autonomous Driving Toolbox, second on real robots.
+Experiments were planned in two steps: first simulations - implemented in
+MATLAB/Simulink, second stage on real robots.
 
     %==========================================================================
     \subsection{Motion Models}
@@ -387,7 +421,7 @@ Autonomous Driving Toolbox, second on real robots.
             \underbrace{
             \begin{bmatrix}
                 a_{u}\\
-                \delta_{u}
+                d_{u}
             \end{bmatrix}
             }_{u_{u}}.
         \end{equation}
@@ -417,7 +451,7 @@ Autonomous Driving Toolbox, second on real robots.
         \[
             u_{u} = 
             \begin{bmatrix}
-                a_{u} & \delta_{u}
+                a_{u} & d_{u}
             \end{bmatrix}^{T},
         \]
         where $a_{u}$ is the linear acceleration and $\delta_{u}$ is the angular
@@ -471,7 +505,7 @@ Autonomous Driving Toolbox, second on real robots.
             \underbrace{
             \begin{bmatrix}
                 a_{b}\\
-                \delta_{b}
+                d_{b}
             \end{bmatrix}
             }_{u_{b}}
         \end{equation}
@@ -501,7 +535,7 @@ Autonomous Driving Toolbox, second on real robots.
         \[
             u_{b} =
             \begin{bmatrix}
-                a_{b} & \delta_{b}
+                a_{b} & d_{b}
             \end{bmatrix}^{T},
         \]
         where $a_{b}$ is the longitudinal acceleration and $\delta_{b}$ is the
@@ -513,43 +547,46 @@ Autonomous Driving Toolbox, second on real robots.
         
     %==========================================================================
     \subsection{Simulations}
-            %------------------------------------------------------------------
-            \subsubsection{Unicycle Model Simulations}
-            The unicycle model was tested in a~scenario where two robots are one
-            colision course. Both robots are controlled by the same
-            controller, which is a~combination of a~CBF and a~nominal
-            controller. Each robot has a~goal position to reach, which is
-            located on the opposite side of the other robot. The robots start
-            have access to own position and velocity, as well as noisy
-            measurements of the other robot's position and velocity. The noise
-            is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
-            and $0.2 m/s$ for position and velocity, respectively.
+        %------------------------------------------------------------------
+        \subsubsection{Unicycle Model Simulations}
+        The unicycle model was tested in a~scenario where two robots are one
+        colision course. Both robots are controlled by the same
+        controller, which is a~combination of a~CBF and a~nominal
+        controller. Each robot has a~goal position to reach, which is
+        located on the opposite side of the other robot. The robots start
+        have access to own position and velocity, as well as noisy
+        measurements of the other robot's position and velocity. The noise
+        is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+        and $0.2 m/s$ for position and velocity, respectively.
 
-            Simulation results, trajectories of both robots, for different
-            values of $\alpha$ (from equation \ref{eq:safety_equation}) are
-            presented in Figure~\ref{fig:unicycle_trajectories}. It can be
-            observed that the robots trajectories are diverge from the straight
-            line produced by the nominal controller, to avoid colision.
-            \begin{figure}[H]
-            \begin{center}
-                \includegraphics[width=1.0\linewidth]{fig/trajectories.eps}
-                \caption{Schematic of unicycle model.} 
-                \label{fig:unicycle_trajectories}
-            \end{center}
-            \end{figure}
-            The distance between robots during the simulation is presented in
-            Figure~\ref{fig:unicycle_distances}.
-            As can be seen, the distance between robots is always greater than
-            the safety distance (1 m), which means that the collision is avoided.
-            The distance is larger for smaller values of $\alpha$, which means
-            that the robots are more conservative in their motion.
-            \begin{figure}[H]
-            \begin{center}
-                \includegraphics[width=1.0\linewidth]{fig/distance.eps}
-                \caption{Distance between robots.} 
-                \label{fig:unicycle_distances}
-            \end{center}
-            \end{figure}
+        Simulation results, trajectories of both robots, for different
+        values of $\alpha$ (from equation \ref{eq:safety_equation}) are
+        presented in Figure~\ref{fig:unicycle_trajectories}. It can be
+        observed that the robots trajectories are diverge from the straight
+        line produced by the nominal controller, to avoid colision.
+        \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=1.0\linewidth]{fig/trajectories.eps}
+            \caption{Schematic of unicycle model.} 
+            \label{fig:unicycle_trajectories}
+        \end{center}
+        \end{figure}
+        The distance between robots during the simulation is presented in
+        Figure~\ref{fig:unicycle_distances}.
+        As can be seen, the distance between robots is always greater than
+        the safety distance (1 m), which means that the collision is avoided.
+        The distance is larger for smaller values of $\alpha$, which means
+        that the robots are more conservative in their motion.
+        \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=1.0\linewidth]{fig/distance.eps}
+            \caption{Distance between robots.} 
+            \label{fig:unicycle_distances}
+        \end{center}
+        \end{figure}
+
+        %------------------------------------------------------------------
+        \subsubsection{Bicycle Model Simulations}
 
     %==========================================================================
     \subsection{Real Experiments}
@@ -573,7 +610,6 @@ operation.
 Simulation studies on unicycle and bicycle models demonstrate that the proposed
 framework successfully maintains safe trajectories while preserving control
 performance, even when state estimates are corrupted by noise.
-%Preliminaryreal-world experiments further confirm the method’s robustness and applicability.
 
 Future work will focus on extending the PCC-CBF framework to multi-agent
 scenarios, incorporating time-varying uncertainty estimates from Bayesian
