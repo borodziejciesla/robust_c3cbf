@@ -71,11 +71,13 @@ and velocity, making them sensitive to uncertainty.
 As perception in real-world scenarios is inherently noisy, 
 such methods may yield overly conservative or unsafe behavior.
 
-To address this limitation, in this work we propose a~\emph{Probabilistic
-Collision Cone Control Barrier Function (PCC-CBF)}. 
+To address this limitation, in this work a~\emph{Probabilistic
+Collision Cone Control Barrier Function (PCC-CBF)} is proposed. 
 The key idea is to extend the deterministic CC-CBF formulation by 
 explicitly modeling uncertainty in relative position and velocity 
-as Gaussian random variables.
+as Gaussian random variables (in most pactical applications moving objects
+are estimated by Extednded Kalman Filter which provides observed object state
+estimation with covariance matrix).
 This allows the safety condition to be reformulated as a~chance constraint,
 ensuring that the probability of collision remains below a~specified risk threshold. 
 The resulting probabilistic safety certificates can be integrated 
@@ -83,91 +85,97 @@ into a~quadratic programming framework for real-time safe control.
 
 The main contributions of this paper are threefold:
 \begin{itemize}
-    \item We introduce a probabilistic formulation of Collision Cone Control
-    Barrier Functions that accounts for uncertainty in perception.
-    \item We derive tractable conditions for chance-constrained safety by
-    exploiting Gaussian approximations of state uncertainty.
-    \item We demonstrate the effectiveness of the proposed PCC-CBF approach in
-    simulation studies on unicycle and bicycle models, as well as preliminary
-    real-world experiments.
+    \item introduction of a~probabilistic formulation of Collision Cone Control
+    Barrier Functions that accounts for uncertainty in perception,
+    \item derivation of tractable conditions for chance-constrained safety by
+    exploiting Gaussian approximations of state uncertainty,
+    \item demonstration of the effectiveness of the proposed PCC-CBF approach in
+    simulation studies on unicycle and bicycle models.
+    %, as well as preliminary real-world experiments.
 \end{itemize}
 
 The remainder of this paper is organized as follows: 
-Section~\ref{sec:literature} reviews related work. 
-Section~\ref{sec:cbf} introduces the classical CBF framework 
-and its integration with collision cones. 
+Section~\ref{sec:literature} reviews related work about existing approches
+to colision avoidance. 
+Section~\ref{sec:cbf} introduces the classical CBF framework and its integration
+with collision cones. 
 Section~\ref{sec:probabilistic} presents the proposed probabilistic extension. 
-Simulation and experimental results are shown in Section~\ref{sec:experiments}, 
+Simulation results are shown in Section~\ref{sec:experiments}, % and experimental?
 followed by conclusions in Section~\ref{sec:summary}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Literature Review}\label{sec:literature}
-The literature on safety-critical control and collision avoidance in autonomous
-systems is extensive and rapidly evolving. This section reviews key developments
-relevant to Control Barrier Functions (CBFs), collision cone methods, and
-probabilistic safety guarantees.
+The field of safety-critical control for autonomous systems is rapidly evolving,
+with a~strong focus on formal methods for real-time collision avoidance. This
+section reviews the core concepts relevant to this work, specifically Control
+Barrier Functions (CBFs), Collision Cone (CC) methods, and probabilistic safety
+guarantees in the presence of uncertainty.
 
 \textbf{Control Barrier Functions (CBFs):}
-CBFs have become a~foundational tool for enforcing safety constraints in
-real-time control of nonlinear systems. The seminal work by
-\citet{ames2017control} ("Control Barrier Function Methods for Safety Critical
-Systems") formalized the use of CBFs for forward invariance of safe sets,
-enabling
-their integration into quadratic programming frameworks for safety-critical
-control.
-Extensions have addressed adaptive systems, input constraints, and multi-agent
-scenarios~\cite{ames2019control} ("Control Barrier Functions: Theory and
-Applications")
-and~\cite{nguyen2016exponential} ("Exponential Control Barrier Functions for
-Enforcing High Relative-Degree Safety-Critical Constraints").
+Control Barrier Functions (CBFs) have emerged as a~foundational tool for
+formally guaranteeing the forward invariance of a~safe set in control-affine
+nonlinear systems. The seminal work by \cite{ames2017control} established the
+framework, showing how safety constraints can be encoded as a linear inequality
+in the control input, enabling their enforcement through real-time Quadratic
+Programming (QP). This method ensures that if an initial state is safe, all
+subsequent states will remain safe. Subsequent extensions have broadened the
+applicability of CBFs to complex scenarios, including adaptive systems, systems
+with input constraints, and multi-agent coordination problems
+\citep{ames2019control, 7524935}.
+
+A significant limitation of classical CBF approaches, however, is their reliance
+on a~deterministic model and the assumption of perfect state information. This
+disconnect from the reality of noisy sensors and imperfect state estimation in
+real-world scenarios motivates the need for robust and probabilistic extensions.
 
 \textbf{Collision Cone Methods:}
-The collision cone (CC) concept, originally introduced for spacecraft and
-robotics applications, provides a geometric framework for predicting potential
-collisions based on relative positions and
-velocities~\cite{chakravarthy1998collision}
-("Collision cones for motion planning and collision avoidance"). Recent works
-have combined CCs with CBFs to create less conservative and more dynamically
-aware safety constraints~\cite{wang2022observer} ("Observer-Based Collision Cone
-Control Barrier Functions for Multi-Agent Systems")
-and~\cite{tayal2024collisionconeapproachcontrol}
-("Collision Cone Approach Control Barrier Functions for Multi-Agent Collision
-Avoidance").
-These approaches have demonstrated improved performance in dynamic and
-multi-agent
-environments.
+For dynamic collision avoidance, the geometric concept of the Collision Cone
+(CC), originally developed in robotics and aerospace
+\citep{chakravarthy1998collision}, is widely used. The CC defines a~region in
+the relative velocity space where, given the current relative position,
+a~collision is inevitable if the relative velocity is maintained.
+
+Integrating this concept with CBFs has led to the development of Collision Cone
+Control Barrier Functions (CC-CBFs). These methods, exemplified by works such as
+\cite{wang2022observer} and \cite{tayal2024collisionconeapproachcontrol},
+utilize the relative geometry and dynamics to construct a~less conservative
+safety constraint compared to simple distance-based CBFs. By explicitly linking
+position and velocity in the barrier function definition, CC-CBFs allow for more
+aggressive and dynamically appropriate maneuvers.
+
+Despite their performance advantages, existing CC-CBF formulations, like their
+deterministic CBF counterparts, generally assume a~perfectly known relative
+state, making them brittle when faced with the inherent noise
+and uncertainty of perception systems.
 
 \textbf{Probabilistic Safety and Uncertainty:}
-Most classical CBF and CC-based methods assume perfect state information,
-which is unrealistic in practice. To address this, several studies have explored
-robust and probabilistic extensions. Chance-constrained
-CBFs~\cite{black2022probabilistic}
-("Probabilistic Safety for Control Barrier Functions with Applications to 
-Adaptive Cruise Control") and~\cite{singletary2023chance}
-("Chance-Constrained Control Barrier Functions for Safety-Critical Control under
-Uncertainty"),
-as well as stochastic safety certificates~\cite{dean2020guaranteeing}
-("Guaranteeing Safety of Learning-Based Control Policies in Unknown
-Environments"),
-have been proposed to account for sensor noise and estimation errors. Gaussian approximations
-and linearization techniques are commonly used to derive tractable safety conditions under uncertainty.
+To bridge the gap between deterministic theory and real-world implementation,
+research has increasingly focused on probabilistic safety guarantees. These
+methods explicitly account for uncertainty—often modeled as Gaussian noise
+arising from sensors (e.g., Extended Kalman Filter outputs)—by reformulating
+the safety condition as a chance constraint.
 
-\textbf{Applications:}
-CBF and CC-based safety frameworks have been applied to a wide range of robotic
-systems, including mobile robots, autonomous vehicles, and aerial
-drones~\cite{ames2019control}
-("Control Barrier Functions: Theory and Applications")
-and~\cite{wang2022observer}
-("Observer-Based Collision Cone Control Barrier Functions for Multi-Agent
-Systems").
-The integration of probabilistic safety guarantees is particularly important for
-real-world deployment, where perception uncertainty and dynamic obstacles are prevalent.
+Key advancements in this area include Chance-Constrained CBFs (CC-CBFs)
+\citep{black2022probabilistic, singletary2023chance} and Stochastic Safety
+Certificates \citep{dean2020guaranteeing}. These approaches typically employ
+Gaussian approximations and linearization techniques to derive a~tractable,
+deterministic inequality from the probabilistic constraint. This allows the
+system to guarantee safety with a~user-defined probability $1-\nu$, where
+$\nu$ is the acceptable risk level.
 
-In summary, while CBFs and collision cone methods provide powerful tools for
-safety-critical control, explicitly accounting for uncertainty remains an active
-area of research. The proposed Probabilistic Collision Cone Control Barrier
-Function (PCC-CBF) builds on these foundations to offer a tractable and robust
-approach for safe navigation in uncertain environments.
+While these works successfully incorporate uncertainty into the general CBF
+framework, a~gap remains: there is a~lack of methods that explicitly combine
+the geometric, dynamic efficiency of the Collision Cone with the formal
+robustness of Chance-Constrained CBFs.
+
+\textbf{Contribution and Novelty:}
+The proposed Probabilistic Collision Cone Control Barrier Function (PCC-CBF)
+directly addresses this gap. It synthesizes the dynamic efficiency of the
+deterministic Collision Cone constraint with the rigorous probabilistic
+framework of Chance-Constrained CBFs. By explicitly modeling relative state
+uncertainty pr and vr as Gaussian random variables within the CC-CBF
+structure, the PCC-CBF provides a~novel, tractable, and robust mechanism for
+real-time, safety-critical control in uncertain environments.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -487,8 +495,8 @@ MATLAB/Simulink, second stage on real robots.
             =
             \underbrace{
             \begin{bmatrix}
-                v\cos{\theta}\\
-                v\sin{\theta}\\
+                v_{b}\cos{\theta_{b}}\\
+                v_{b}\sin{\theta_{b}}\\
                 0\\
                 0
             \end{bmatrix}
