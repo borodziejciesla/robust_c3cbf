@@ -78,7 +78,9 @@ This condition can be written as:
 ![c3bf](fig/probabilistic_condition.svg)
 
 
-Example trajectory of two robots in colision course, for different $\alpha$ values, is presented below:
+Example trajectory of two robots in colision course, for different $\alpha$
+values, is presented below:
+#### Unicycle model
 
 ![trajectories](fig/robot_trajectory_alpha1.gif)
 
@@ -89,6 +91,14 @@ Example trajectory of two robots in colision course, for different $\alpha$ valu
 ![trajectories](fig/robot_trajectory_alpha100.gif)
 
 ![trajectories](fig/robot_trajectory_alpha1000.gif)
+
+#### Bicycle model
+
+![trajectories](fig/robot_trajectory_alpha1_bicycle.gif)
+
+![trajectories](fig/robot_trajectory_alpha5_bicycle.gif)
+
+![trajectories](fig/robot_trajectory_alpha10_bicycle.gif)
 
 
 ## How to run?
