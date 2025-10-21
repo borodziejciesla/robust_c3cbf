@@ -438,7 +438,7 @@ MATLAB/Simulink, second stage on real robots.
         \begin{center}
             \includegraphics[width=0.7\linewidth]{fig/unicycle_model.png}
             \caption{Schematic of unicycle model.} 
-            \label{fig:collision_cone}
+            \label{fig:unicycle_model}
         \end{center}
         \end{figure}
 
@@ -495,35 +495,21 @@ MATLAB/Simulink, second stage on real robots.
             =
             \underbrace{
             \begin{bmatrix}
-                v_{b}\cos{\theta_{b}}\\
-                v_{b}\sin{\theta_{b}}\\
-                0\\
-                0
+                v_{b}\cos{(\theta_{b})}\\
+                v_{b}\sin{(\theta_{b})}\\
+                \frac{v_{b}}{L}\tan{d_{b}}\\
+                a_{b}
             \end{bmatrix}
-            }_{f_{b}(x_{b})}
-            +
-            \underbrace{
-            \begin{bmatrix}
-                0   &   -v_{b}\sin{\theta_{b}}\\
-                0   &   -v_{b}\cos{\theta_{b}}\\
-                0   &   \frac{v_{b}}{L}\\
-                1   &   0
-            \end{bmatrix}
-            }_{g_{b}(x_{b})}
-            \underbrace{
-            \begin{bmatrix}
-                a_{b}\\
-                d_{b}
-            \end{bmatrix}
-            }_{u_{b}}
+            }_{f_{b}(x_{b}, u_{b})}
         \end{equation}
-        where $L$ is the wheelbase (distance between front and rear axles).
+        where $L$ is wheel base, as it is shown in Figure \ref{fig:bicycle_model},
+         
 
         \begin{figure}[H]
         \begin{center}
             \includegraphics[width=1.0\linewidth]{fig/bicycle_model.png}
             \caption{Schematic of bicycle model.} 
-            \label{fig:collision_cone}
+            \label{fig:bicycle_model}
         \end{center}
         \end{figure}
 
@@ -575,7 +561,8 @@ MATLAB/Simulink, second stage on real robots.
         \begin{figure}[H]
         \begin{center}
             \includegraphics[width=1.0\linewidth]{fig/trajectories.eps}
-            \caption{Schematic of unicycle model.} 
+            \caption{Trajectories of robots with unicycle kinematics for
+            different $\alpha$ values.} 
             \label{fig:unicycle_trajectories}
         \end{center}
         \end{figure}
@@ -588,13 +575,70 @@ MATLAB/Simulink, second stage on real robots.
         \begin{figure}[H]
         \begin{center}
             \includegraphics[width=1.0\linewidth]{fig/distance.eps}
-            \caption{Distance between robots.} 
+            \caption{Distance between robots (unicycle model) - it is clearly
+            visible that in any case safe distance is crossed.} 
             \label{fig:unicycle_distances}
+        \end{center}
+        \end{figure}
+        Second experiment was conducted with one robot using nominal controller
+        only, and the other using CBF to avoid collision. The position of both
+        robots during the simulation is presented in Figure~\ref{fig:unicycle_positions}.
+        It can be observed that the robot using CBF is able to avoid collision
+        with the other robot, it starts, stops for a~moment, and then continues
+        safely to its goal.
+        \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=1.0\linewidth]{fig/positions.eps}
+            \caption{Position of both robots. Robot 1 runs nominal controller
+            only, and Robot 2 uses CBF to avoid collision.} 
+            \label{fig:unicycle_positions}
         \end{center}
         \end{figure}
 
         %------------------------------------------------------------------
         \subsubsection{Bicycle Model Simulations}
+        The bicycle model was tested in a~similar scenario as the unicycle model.
+        Two robots are on a~collision course, each controlled by the same
+        controller, which is a~combination of a~CBF and a~nominal
+        controller. Each robot has a~goal position to reach, which is
+        located on the opposite side of the other robot. The robots start
+        have access to own position and velocity, as well as noisy
+        measurements of the other robot's position and velocity. The noise
+        is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+        and $0.2 m/s$ for position and velocity, respectively.
+
+        Simulation results, trajectories of both robots, for different
+        values of $\alpha$ (from equation \ref{eq:safety_equation}) are
+        presented in Figure~\ref{fig:bicycle_trajectories}. It can be
+        observed that the robots trajectories are diverge from the straight
+        line produced by the nominal controller, to avoid colision. Those 
+        deviations are visibly larger than i case of unicycle model, which
+        is caused by the nonholonomic constraints of the bicycle model.
+        Also this time in case of smallest value of $\alpha$ can be observed
+        waiting by one robot for second robot pass.
+
+        \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=1.0\linewidth]{fig/trajectories_bicycle.eps}
+            \caption{Trajectory of robots with bicycle kinematics for different
+            $\alpha$ values.} 
+            \label{fig:bicycle_trajectories}
+        \end{center}
+        \end{figure}
+
+        In figure \ref{fig:bicycle_distances} distance between robots during the
+        simulation is presented. As can be seen, the distance between robots is
+        always greater than the safety distance (1 m), which means that the
+        collision is avoided and the PCC-CBF works correctly.
+
+        \begin{figure}[H]
+        \begin{center}
+            \includegraphics[width=1.0\linewidth]{fig/distance_bicycle.eps}
+            \caption{Distance between robots (bicycle model) - it is clearly
+            visible that in any case safe distance is crossed.} 
+            \label{fig:bicycle_distances}
+        \end{center}
+        \end{figure}
 
     %==========================================================================
     \subsection{Real Experiments}

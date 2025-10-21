@@ -1,10 +1,15 @@
 # Probabilistic Colision Cone Control Barrier Function (PCC-CBF)
-Implementation of Robust Colision Cone Control Barrier Function for holonomic mobile robot, with kinematic modelled with equations:
+Implementation of Robust Colision Cone Control Barrier Function for mobile
+robots, with following kinematics models:
+#### Unicycle Model
 
 ![Kinematic Model](fig/kinematic_model.svg)
 
+#### Bicycle Model
 
-Where $v$ and $\omega$ are controll inputs.
+![Kinematic Model](fig/bicycle_model.svg)
+
+Where $a$ and $\delta$ are controll inputs.
 <!-- ==================================================================================== -->
 ## Base Controller
 Base controller trajectories:
@@ -88,9 +93,6 @@ values, is presented below:
 
 ![trajectories](fig/robot_trajectory_alpha10.gif)
 
-![trajectories](fig/robot_trajectory_alpha100.gif)
-
-![trajectories](fig/robot_trajectory_alpha1000.gif)
 
 #### Bicycle model
 
