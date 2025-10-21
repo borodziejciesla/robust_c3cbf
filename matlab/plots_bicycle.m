@@ -1,19 +1,24 @@
-alphas = [1, 5, 10, 100, 1000];
+alphas = [1, 5, 10];
 outputs = [];
 
 do_filter = true;
+do_filter_robot_1 = true;
+do_filter_robot_2 = true;
 do_probabilistic_filter = true;
 
 for index = 1:length(alphas)
     alpha = alphas(index);
-    outputs = [outputs; sim("model.slx")];
+    outputs = [outputs; sim("model_bicycle.slx")];
 end
 
+%% 
 trajectory_figure = figure();
 distance_figure = figure();
 control_acceleration_figure = figure();
 control_yaw_rate_figure = figure();
 position_figure = figure();
+
+c = ['r', 'b', 'g', 'k', 'm'];
 
 for alpha_index = 1:length(outputs)
     out = outputs(alpha_index);
@@ -26,11 +31,14 @@ for alpha_index = 1:length(outputs)
     ylabel("y [m]");
     legend("show");
     plot(out.logsout.find('x1').Values.Data, out.logsout.find('y1').Values.Data, ...
+        "Color", c(alpha_index), ...
         "DisplayName", "Robot 1 - \alpha = " + num2str(alphas(alpha_index)), ...
-        "LineWidth", 2);
+        "LineWidth", 3);
     plot(out.logsout.find('x2').Values.Data, out.logsout.find('y2').Values.Data, ...
+        "--", ...
+        "Color", c(alpha_index), ...
         "DisplayName", "Robot 2 - \alpha = " + num2str(alphas(alpha_index)), ...
-        "LineWidth", 2);
+        "LineWidth", 3);
     
     figure(distance_figure);
     title("Distance between robots");
@@ -41,14 +49,14 @@ for alpha_index = 1:length(outputs)
     x_diff = out.logsout.find('x1').Values.Data - out.logsout.find('x2').Values.Data;
     y_diff = out.logsout.find('y1').Values.Data - out.logsout.find('y2').Values.Data;
     dist = sqrt(x_diff.^2 + y_diff.^2);
-    plot(out.logsout.find('x1').Values.Time, dist, ...
-        "LineWidth", 2, ...
-        "DisplayName", "Distance between robots - \alpha = " + num2str(alphas(alpha_index)));
     plot(out.logsout.find('x1').Values.Time, ones(size(out.logsout.find('x1').Values.Time)), ...
         "k--", ...
         "LineWidth", 2, ...
         "DisplayName", "Minimum safe distance");
-    
+    plot(out.logsout.find('x1').Values.Time, dist, ...
+        "LineWidth", 2, ...
+        "DisplayName", "Distance between robots - \alpha = " + num2str(alphas(alpha_index)));
+        
     figure(control_acceleration_figure);
     subplot(2, 1, 1);
     title("Robot 1 Acceleration");
@@ -125,6 +133,7 @@ for alpha_index = 1:length(outputs)
         "DisplayName", "Robot 2 - \alpha = " + num2str(alphas(alpha_index)), ...
         "LineWidth", 2);
 
+    % continue;
     
     %% Make plots
     robot_1_x = out.logsout.find('x1').Values.Data;
@@ -151,27 +160,54 @@ for alpha_index = 1:length(outputs)
 
     heading_len = 1.0; % długość strzałki reprezentującej orientację
 
-    for index = 1:5:length(robot_1_x)
+    car_length = 1.0;     % długość prostokąta robota [m]
+    car_width  = 0.5;     % szerokość prostokąta robota [m]
+
+    for index = 1:50:length(robot_1_x)
         % --- Robot 1 ---
-        p1 = nsidedpoly(100, 'Center', [robot_1_x(index) robot_1_y(index)], 'Radius', 0.5);
-        h1 = plot(p1, 'FaceColor', 'r');
-
-        % Rysowanie headingu robota 1
-        hx1 = [robot_1_x(index), robot_1_x(index) + heading_len*cos(theta_1(index))];
-        hy1 = [robot_1_y(index), robot_1_y(index) + heading_len*sin(theta_1(index))];
-        h_head1 = plot(hx1, hy1, 'k-', 'LineWidth', 2); % czarna linia kierunku
-
+        x_c1 = robot_1_x(index);
+        y_c1 = robot_1_y(index);
+        yaw1 = theta_1(index);
+    
+        % Współrzędne narożników prostokąta w lokalnym układzie (środek w (0,0))
+        rect_local = [ car_length/2,  car_width/2;
+                       car_length/2, -car_width/2;
+                      -car_length/2, -car_width/2;
+                      -car_length/2,  car_width/2;
+                       car_length/2,  car_width/2]';  % zamykamy kształt
+    
+        % Macierz obrotu
+        R = [cos(yaw1), -sin(yaw1);
+             sin(yaw1),  cos(yaw1)];
+    
+        % Obrót i przesunięcie prostokąta
+        rect_global1 = R * rect_local + [x_c1; y_c1];
+    
+        % Rysowanie prostokąta
+        h1 = fill(rect_global1(1, :), rect_global1(2, :), 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none');
+    
+        % Rysowanie headingu
+        hx1 = [x_c1, x_c1 + heading_len*cos(yaw1)];
+        hy1 = [y_c1, y_c1 + heading_len*sin(yaw1)];
+        h_head1 = plot(hx1, hy1, 'k-', 'LineWidth', 2);
+    
         % --- Robot 2 ---
-        p2 = nsidedpoly(100, 'Center', [robot_2_x(index) robot_2_y(index)], 'Radius', 0.5);
-        h2 = plot(p2, 'FaceColor', 'b');
-
-        % Rysowanie headingu robota 2
-        hx2 = [robot_2_x(index), robot_2_x(index) + heading_len*cos(theta_2(index))];
-        hy2 = [robot_2_y(index), robot_2_y(index) + heading_len*sin(theta_2(index))];
+        x_c2 = robot_2_x(index);
+        y_c2 = robot_2_y(index);
+        yaw2 = theta_2(index);
+    
+        rect_global2 = R * rect_local + [x_c2; y_c2]; % możesz użyć nowego R dla yaw2
+        R2 = [cos(yaw2), -sin(yaw2);
+              sin(yaw2),  cos(yaw2)];
+        rect_global2 = R2 * rect_local + [x_c2; y_c2];
+        h2 = fill(rect_global2(1, :), rect_global2(2, :), 'b', 'FaceAlpha', 0.6, 'EdgeColor', 'none');
+    
+        hx2 = [x_c2, x_c2 + heading_len*cos(yaw2)];
+        hy2 = [y_c2, y_c2 + heading_len*sin(yaw2)];
         h_head2 = plot(hx2, hy2, 'k-', 'LineWidth', 2);
-
+    
         drawnow;
-
+    
         % --- Tworzenie klatki GIF ---
         frame = getframe(gcf);
         im = frame2im(frame);
@@ -181,7 +217,7 @@ for alpha_index = 1:length(outputs)
         else
             imwrite(imind, cm, filename, 'gif', 'WriteMode', 'append', 'DelayTime', 0.1);
         end
-
+    
         % --- Usuwanie obiektów przed kolejną klatką ---
         delete(h1)
         delete(h2)
