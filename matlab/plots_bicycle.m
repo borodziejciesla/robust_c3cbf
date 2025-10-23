@@ -1,7 +1,9 @@
+dt = 0.01;
+T = 15;
+
 alphas = [1, 5, 10];
 outputs = [];
 
-do_filter = true;
 do_filter_robot_1 = true;
 do_filter_robot_2 = true;
 do_probabilistic_filter = true;

@@ -1,14 +1,13 @@
 alphas = [1, 5, 10];
 outputs = [];
 
-do_filter = true;
 do_filter_robot_1 = true;
 do_filter_robot_2 = true;
 do_probabilistic_filter = true;
 
 for index = 1:length(alphas)
     alpha = alphas(index);
-    outputs = [outputs; sim("model.slx")];
+    outputs = [outputs; sim("model_unicycle.slx")];
 end
 
 %% 
