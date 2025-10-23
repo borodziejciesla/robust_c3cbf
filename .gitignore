@@ -41,3 +41,98 @@ local_setup.*
 
 # DS_Store (macOS)
 .DS_Store
+
+# ==========================================
+# MATLAB & Simulink .gitignore
+# ==========================================
+
+# --- Pliki tymczasowe MATLAB ---
+*.asv            
+*.m~               
+*.autosave
+*.bak
+*.orig
+*.tmp
+
+# --- Pliki cache i kompilacji ---
+*.mex*              
+*.p                 
+*.obj
+*.o
+*.dll
+*.so
+*.a
+*.lib
+*.exe
+
+# --- Foldery lokalne użytkownika ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# --- MATLAB session and preferences ---
+*.prj                # MATLAB project files (opcjonalnie, jeśli generowane automatycznie)
+*.mat                # Dane tymczasowe (uwaga: zachowaj, jeśli istotne!)
+*.fig                # Rysunki (opcjonalnie)
+*.mlappinstall
+*.mltbx              # Toolboksy – często duże i generowane automatycznie
+
+# --- Simulink cache / build artifacts ---
+slprj/
+sccprj/
+work/
+codegen/
+slcov_output/
+slprj/
+slbuild/
+simulink_cache.slxc
+*.slxc
+*.slx.autosave
+*.slxp.autosave
+*.mdl.autosave
+
+# --- Simscape / HDL / Embedded Coder ---
+simscape/
+hdl_prj/
+emlcprj/
+tmwinternal/
+rtw/
+rtiostream/
+tfl_table/
+*_ert_rtw/
+*_grt_rtw/
+*_srtt_rtw/
+*_mldatx
+*.rtw
+*.rpt
+*.info
+*.tmw
+
+# --- Test reports / coverage / diagnostics ---
+test_results/
+coverage/
+*.xml
+*.log
+*.txt
+*.csv
+*.xlsx
+*.html
+
+# --- System-specific ---
+.idea/
+.vscode/
+*.sln
+*.user
+*.workspace
+*.proj
+*.matlab
+
+# --- ROS 2 / CMake / External builds (opcjonalnie) ---
+build/
+devel/
+install/
+CMakeLists.txt.user
+*.catkin_workspace
+*.rosinstall
