@@ -502,7 +502,45 @@ MATLAB/Simulink, second stage on real robots.
             \end{bmatrix}
             }_{f_{b}(x_{b}, u_{b})}
         \end{equation}
-        where $L$ is wheel base, as it is shown in Figure \ref{fig:bicycle_model},
+        where $L$ is wheel base, as it is shown in Figure
+        \ref{fig:bicycle_model}.
+        
+        This nonlinear model can be expressed in control-affine form by defining
+        $\delta_{b} = \tan{d_{b}}$. The resulting linearized dynamics has form
+        (\ref{eq:bicycle_model_linearized}):
+        \begin{equation}
+            \label{eq:bicycle_model_linearized}
+            \underbrace{
+            \begin{bmatrix}
+                \dot{x}_{b}\\
+                \dot{y}_{b}\\
+                \dot{\theta}_{b}\\
+                \dot{v}_{b}
+            \end{bmatrix}
+            }_{\dot{x}_{b}}
+            =
+            \underbrace{
+            \begin{bmatrix}
+                v_{b}\cos{(\theta_{b})}\\
+                v_{b}\sin{(\theta_{b})}\\
+                0\\
+                0
+            \end{bmatrix}
+            }_{\hat{f}_{b}(x_{b})}
+            +
+            \underbrace{
+            \begin{bmatrix}
+                0 & 0\\
+                0 & 0\\
+                0 & \frac{v}{L}\\
+                1 & 0
+            \end{bmatrix}
+            }_{\hat{g}_{b}(x_{b})}
+            \begin{bmatrix}
+                a_{b}\\
+                \delta_{b}
+            \end{bmatrix}.
+        \end{equation}
          
 
         \begin{figure}[H]
