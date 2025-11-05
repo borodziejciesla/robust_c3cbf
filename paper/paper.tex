@@ -59,7 +59,7 @@ information, which is rarely satisfied in practice due to sensor noise and
 perception errors.
 In this work, a~Probabilistic Collision Cone Control Barrier Function (PCC-CBF)
 is introduced as a~novel framework explicitly accounting for uncertainty in the
-relative position and velocity of obstacles by modeling them as Gaussian random
+relative position and velocity of obstacles by modelling them as Gaussian random
 variables. The classical collision cone condition is reformulated as a~chance
 constraint, ensuring that the probability of collision remains below a~specified
 risk threshold.
@@ -99,14 +99,14 @@ CBFs to ensure collision-free navigation~\cite{wang2022observer}.
 Yet, these approaches still rely on deterministic estimates of relative position
 and velocity, making them sensitive to uncertainty. 
 As perception in real-world scenarios is inherently noisy, 
-such methods may yield overly conservative or unsafe behavior.
+such methods may yield overly conservative or unsafe behaviors.
 
 To address this limitation, in this work a~\emph{Probabilistic
 Collision Cone Control Barrier Function (PCC-CBF)} is proposed. 
 The key idea is to extend the deterministic CC-CBF formulation by 
-explicitly modeling uncertainty in relative position and velocity 
-as Gaussian random variables (in most pactical applications moving objects
-are estimated by Extednded Kalman Filter which provides observed object state
+explicitly modelling uncertainty in relative position and velocity 
+as Gaussian random variables (in most practical applications moving objects
+are estimated by Extended Kalman Filter which provides observed object state
 estimation with covariance matrix).
 This allows the safety condition to be reformulated as a~chance constraint,
 ensuring that the probability of collision remains below a~specified risk threshold. 
@@ -125,8 +125,8 @@ The main contributions of this paper are threefold:
 \end{itemize}
 
 The remainder of this paper is organized as follows: 
-Section \ref{sec:literature}~reviews related work about existing approches
-to colision avoidance. 
+Section \ref{sec:literature}~reviews related work about existing approaches
+to collision avoidance. 
 Section \ref{sec:cbf}~introduces the classical CBF framework and its integration
 with collision cones. 
 Section \ref{sec:probabilistic}~presents the proposed probabilistic extension. 
@@ -171,7 +171,7 @@ Control Barrier Functions (CC-CBFs). These methods, exemplified by works such as
 utilize the relative geometry and dynamics to construct a~less conservative
 safety constraint compared to simple distance-based CBFs. By explicitly linking
 position and velocity in the barrier function definition, CC-CBFs allow for more
-aggressive and dynamically appropriate maneuvers.
+aggressive and dynamically appropriate manoeuvres.
 
 Despite their performance advantages, existing CC-CBF formulations, like their
 deterministic CBF counterparts, generally assume a~perfectly known relative
@@ -202,8 +202,8 @@ robustness of Chance-Constrained CBFs.
 The proposed Probabilistic Collision Cone Control Barrier Function (PCC-CBF)
 directly addresses this gap. It synthesizes the dynamic efficiency of the
 deterministic Collision Cone constraint with the rigorous probabilistic
-framework of Chance-Constrained CBFs. By explicitly modeling relative state
-uncertainty pr and vr as Gaussian random variables within the CC-CBF
+framework of Chance-Constrained CBFs. By explicitly modelling relative state
+uncertainty $p_r$ and $v_r$ as Gaussian random variables within the CC-CBF
 structure, the PCC-CBF provides a~novel, tractable, and robust mechanism for
 real-time, safety-critical control in uncertain environments.
 
@@ -275,7 +275,7 @@ If $v_r$ is outside the cone, the agents will not collide, assuming their veloci
 By incorporating the collision cone into a control barrier function, the system can enforce safety constraints that are sensitive to both position and velocity, allowing for less conservative and more flexible collision avoidance compared to simple distance-based rules. This approach is especially useful in dynamic environments where both agents may be moving.
 %//////////////
 
-Derivative of such defeined barrier function has following form:
+Derivative of such defined barrier function has following form:
 \begin{equation}
     \label{eq:collision_cone_cbf}
     \begin{array}{c}
@@ -285,12 +285,12 @@ Derivative of such defeined barrier function has following form:
     \end{array}
 \end{equation}
 
-This formula will be reformulated in next section to has form as in equaltion~\ref{eq:safety_equation}. 
+This formula will be reformulated in next section to has form as in equation~\ref{eq:safety_equation}. 
 
 \begin{figure}[H]
 \begin{center}
-    \includegraphics[width=0.7\linewidth]{fig/colision_cone_fig.png}
-    \caption{Construction of collision cone for an alliptical obstacle
+    \includegraphics[width=0.7\linewidth]{fig/collision_cone_fig.png}
+    \caption{Construction of collision cone for an elliptical obstacle
     considering the ego vehicle's dimensions (width $w$).} 
     \label{fig:collision_cone}
 \end{center}
@@ -304,7 +304,7 @@ section provides a deterministic safety certificate. In particular, the conditio
 an obstacle remains outside the collision cone. However, this formulation implicitly
 assumes perfect knowledge of the obstacle’s position and velocity. In real-world
 scenarios, perception is subject to sensor noise, occlusions, and state estimation
-errors, which may lead to unsafe behavior if not explicitly accounted for.
+errors, which may lead to unsafe behaviors if not explicitly accounted for.
 
 To incorporate uncertainty, we model the relative position $p_{r}$ and velocity
 $v_{r}$ of the obstacle as random variables. Let
@@ -611,20 +611,20 @@ MATLAB/Simulink, second stage on real robots.
         %------------------------------------------------------------------
         \subsubsection{Unicycle Model Simulations}
         The unicycle model was tested in a~scenario where two robots are one
-        colision course. Both robots are controlled by the same
+        collision course. Both robots are controlled by the same
         controller, which is a~combination of a~CBF and a~nominal
         controller. Each robot has a~goal position to reach, which is
         located on the opposite side of the other robot. The robots start
         have access to own position and velocity, as well as noisy
         measurements of the other robot's position and velocity. The noise
-        is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+        is modelled as zero-mean Gaussian with standard deviation of $0.2 m$
         and $0.2 m/s$ for position and velocity, respectively.
 
         Simulation results, trajectories of both robots, for different
         values of $\alpha$ (from equation \ref{eq:safety_equation}) are
         presented in Figure~\ref{fig:unicycle_trajectories}. It can be
         observed that the robots trajectories are diverge from the straight
-        line produced by the nominal controller, to avoid colision.
+        line produced by the nominal controller, to avoid collision.
         \begin{figure}[H]
         \begin{center}
             \includegraphics[width=0.5\linewidth]{fig/trajectories.eps}
@@ -671,14 +671,14 @@ MATLAB/Simulink, second stage on real robots.
         located on the opposite side of the other robot. The robots start
         have access to own position and velocity, as well as noisy
         measurements of the other robot's position and velocity. The noise
-        is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+        is modelled as zero-mean Gaussian with standard deviation of $0.2 m$
         and $0.2 m/s$ for position and velocity, respectively.
 
         Simulation results, trajectories of both robots, for different
         values of $\alpha$ (from equation \ref{eq:safety_equation}) are
         presented in Figure~\ref{fig:bicycle_trajectories}. It can be
         observed that the robots trajectories are diverge from the straight
-        line produced by the nominal controller, to avoid colision. Those 
+        line produced by the nominal controller, to avoid collision. Those 
         deviations are visibly larger than i case of unicycle model, which
         is caused by the nonholonomic constraints of the bicycle model.
         Also this time in case of smallest value of $\alpha$ can be observed
