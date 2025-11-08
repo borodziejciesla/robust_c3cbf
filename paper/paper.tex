@@ -1,26 +1,55 @@
-\documentclass[11pt]{article}
+%%%%%%%%%%%%%%%%%%%% author.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample root file for your "contribution" to a proceedings volume
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%% Springer %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Packages
-\usepackage[utf8]{inputenc}
+
+\documentclass{svproc}
+%
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+
+% to typeset URLs, URIs, and DOIs
 \usepackage{amsmath, amssymb}
+\usepackage{caption}
 \usepackage{float}
 \usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{geometry}
-\usepackage{multicol}
-\usepackage{natbib} 
+\usepackage{url}
+\usepackage{subcaption}
 
-\geometry{margin=1in}
-
-% Title
-\title{Probabilistic Collision Cone Control Barrier Function}
-\author{Maciej Różewicz}
-\date{\today}
+\def\UrlFont{\rmfamily}
 
 \begin{document}
+\mainmatter              % start of a contribution
+%
+\title{Probabilistic Collision Cone Control Barrier Function}
+%
+\titlerunning{Probabilistic Collision Cone Control Barrier Function}  % abbreviated title (for running head)
+%                                     also used for the TOC unless
+%                                     \toctitle is used
+%
+\author{Maciej Różewicz\inst{1} \and Dariusz Cieślar\inst{2}}
+%
+\authorrunning{Różewicz, Cieślar} % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{Ivar Ekeland, Roger Temam, Jeffrey Dean, David Grove,
+Craig Chambers, Kim B. Bruce, and Elisa Bertino}
+%
+\institute{
+AGH University of Science and Technology, Kraków, Poland,\\
+\email{mrozewicz@agh.edu.pl}
+\and
+AGH University of Science and Technology, Kraków, Poland,\\
+\email{dcieslar@agh.edu.pl}
+}
 
-\maketitle
+\maketitle              % typeset the title of the contribution
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 Safety constitutes a~fundamental requirement for autonomous systems operating in
 dynamic and uncertain environments. Control Barrier Functions (CBFs) have
@@ -30,7 +59,7 @@ information, which is rarely satisfied in practice due to sensor noise and
 perception errors.
 In this work, a~Probabilistic Collision Cone Control Barrier Function (PCC-CBF)
 is introduced as a~novel framework explicitly accounting for uncertainty in the
-relative position and velocity of obstacles by modeling them as Gaussian random
+relative position and velocity of obstacles by modelling them as Gaussian random
 variables. The classical collision cone condition is reformulated as a~chance
 constraint, ensuring that the probability of collision remains below a~specified
 risk threshold.
@@ -40,9 +69,10 @@ unicycle and bicycle models, as well as preliminary real-world experiments. The
 obtained results confirm that the proposed approach enables safe and efficient
 navigation under uncertainty, providing a~practical solution for robust
 autonomous operation.
+\keywords{control barrier functions, probabilistic safety, chance constraints,
+autonomous systems, uncertainty modeling}
 \end{abstract}
 
-\begin{multicols}{2}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 Ensuring safety is a~fundamental requirement in the design of autonomous systems, 
@@ -69,14 +99,14 @@ CBFs to ensure collision-free navigation~\cite{wang2022observer}.
 Yet, these approaches still rely on deterministic estimates of relative position
 and velocity, making them sensitive to uncertainty. 
 As perception in real-world scenarios is inherently noisy, 
-such methods may yield overly conservative or unsafe behavior.
+such methods may yield overly conservative or unsafe behaviors.
 
 To address this limitation, in this work a~\emph{Probabilistic
 Collision Cone Control Barrier Function (PCC-CBF)} is proposed. 
 The key idea is to extend the deterministic CC-CBF formulation by 
-explicitly modeling uncertainty in relative position and velocity 
-as Gaussian random variables (in most pactical applications moving objects
-are estimated by Extednded Kalman Filter which provides observed object state
+explicitly modelling uncertainty in relative position and velocity 
+as Gaussian random variables (in most practical applications moving objects
+are estimated by Extended Kalman Filter which provides observed object state
 estimation with covariance matrix).
 This allows the safety condition to be reformulated as a~chance constraint,
 ensuring that the probability of collision remains below a~specified risk threshold. 
@@ -95,13 +125,13 @@ The main contributions of this paper are threefold:
 \end{itemize}
 
 The remainder of this paper is organized as follows: 
-Section~\ref{sec:literature} reviews related work about existing approches
-to colision avoidance. 
-Section~\ref{sec:cbf} introduces the classical CBF framework and its integration
+Section \ref{sec:literature}~reviews related work about existing approaches
+to collision avoidance. 
+Section \ref{sec:cbf}~introduces the classical CBF framework and its integration
 with collision cones. 
-Section~\ref{sec:probabilistic} presents the proposed probabilistic extension. 
-Simulation results are shown in Section~\ref{sec:experiments}, % and experimental?
-followed by conclusions in Section~\ref{sec:summary}.
+Section \ref{sec:probabilistic}~presents the proposed probabilistic extension. 
+Simulation results are shown in Section \ref{sec:experiments}, % and experimental?
+followed by conclusions in Section \ref{sec:summary}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Literature Review}\label{sec:literature}
@@ -121,7 +151,7 @@ Programming (QP). This method ensures that if an initial state is safe, all
 subsequent states will remain safe. Subsequent extensions have broadened the
 applicability of CBFs to complex scenarios, including adaptive systems, systems
 with input constraints, and multi-agent coordination problems
-\citep{ames2019control, 7524935}.
+\cite{ames2019control, 7524935}.
 
 A significant limitation of classical CBF approaches, however, is their reliance
 on a~deterministic model and the assumption of perfect state information. This
@@ -131,7 +161,7 @@ real-world scenarios motivates the need for robust and probabilistic extensions.
 \textbf{Collision Cone Methods:}
 For dynamic collision avoidance, the geometric concept of the Collision Cone
 (CC), originally developed in robotics and aerospace
-\citep{chakravarthy1998collision}, is widely used. The CC defines a~region in
+\cite{chakravarthy1998collision}, is widely used. The CC defines a~region in
 the relative velocity space where, given the current relative position,
 a~collision is inevitable if the relative velocity is maintained.
 
@@ -141,7 +171,7 @@ Control Barrier Functions (CC-CBFs). These methods, exemplified by works such as
 utilize the relative geometry and dynamics to construct a~less conservative
 safety constraint compared to simple distance-based CBFs. By explicitly linking
 position and velocity in the barrier function definition, CC-CBFs allow for more
-aggressive and dynamically appropriate maneuvers.
+aggressive and dynamically appropriate manoeuvres.
 
 Despite their performance advantages, existing CC-CBF formulations, like their
 deterministic CBF counterparts, generally assume a~perfectly known relative
@@ -156,8 +186,8 @@ arising from sensors (e.g., Extended Kalman Filter outputs)—by reformulating
 the safety condition as a chance constraint.
 
 Key advancements in this area include Chance-Constrained CBFs (CC-CBFs)
-\citep{black2022probabilistic, singletary2023chance} and Stochastic Safety
-Certificates \citep{dean2020guaranteeing}. These approaches typically employ
+\cite{black2022probabilistic, singletary2023chance} and Stochastic Safety
+Certificates \cite{dean2020guaranteeing}. These approaches typically employ
 Gaussian approximations and linearization techniques to derive a~tractable,
 deterministic inequality from the probabilistic constraint. This allows the
 system to guarantee safety with a~user-defined probability $1-\nu$, where
@@ -172,8 +202,8 @@ robustness of Chance-Constrained CBFs.
 The proposed Probabilistic Collision Cone Control Barrier Function (PCC-CBF)
 directly addresses this gap. It synthesizes the dynamic efficiency of the
 deterministic Collision Cone constraint with the rigorous probabilistic
-framework of Chance-Constrained CBFs. By explicitly modeling relative state
-uncertainty pr and vr as Gaussian random variables within the CC-CBF
+framework of Chance-Constrained CBFs. By explicitly modelling relative state
+uncertainty $p_r$ and $v_r$ as Gaussian random variables within the CC-CBF
 structure, the PCC-CBF provides a~novel, tractable, and robust mechanism for
 real-time, safety-critical control in uncertain environments.
 
@@ -245,23 +275,22 @@ If $v_r$ is outside the cone, the agents will not collide, assuming their veloci
 By incorporating the collision cone into a control barrier function, the system can enforce safety constraints that are sensitive to both position and velocity, allowing for less conservative and more flexible collision avoidance compared to simple distance-based rules. This approach is especially useful in dynamic environments where both agents may be moving.
 %//////////////
 
-Derivative of such defeined barrier function has following form:
+Derivative of such defined barrier function has following form:
 \begin{equation}
     \label{eq:collision_cone_cbf}
     \begin{array}{c}
     \dot{h}(x,u) = <\dot{p}_{r},v_{r}> + <p_{r},\dot{v}_{r}>\\
-        + <v_{r},\dot{v}_{r}> \frac{\sqrt{||p_{r}||^{2} - r^{2}}}{||v_{r}||}\\
+        + <v_{r},\dot{v}_{r}> \frac{\sqrt{||p_{r}||^{2} - r^{2}}}{||v_{r}||}
         + <p_{r},\dot{p}_{r}> \frac{||p_{r}||}{\sqrt{||p_{r}||^{2} - r^{2}}}
     \end{array}
 \end{equation}
 
-This formula will be reformulated in next section to has form as in equaltion 
-\ref{eq:safety_equation}. 
+This formula will be reformulated in next section to has form as in equation~\ref{eq:safety_equation}. 
 
 \begin{figure}[H]
 \begin{center}
-    \includegraphics[width=1.0\linewidth]{fig/colision_cone_fig.png}
-    \caption{Construction of collision cone for an alliptical obstacle
+    \includegraphics[width=0.7\linewidth]{fig/collision_cone_fig.png}
+    \caption{Construction of collision cone for an elliptical obstacle
     considering the ego vehicle's dimensions (width $w$).} 
     \label{fig:collision_cone}
 \end{center}
@@ -275,7 +304,7 @@ section provides a deterministic safety certificate. In particular, the conditio
 an obstacle remains outside the collision cone. However, this formulation implicitly
 assumes perfect knowledge of the obstacle’s position and velocity. In real-world
 scenarios, perception is subject to sensor noise, occlusions, and state estimation
-errors, which may lead to unsafe behavior if not explicitly accounted for.
+errors, which may lead to unsafe behaviors if not explicitly accounted for.
 
 To incorporate uncertainty, we model the relative position $p_{r}$ and velocity
 $v_{r}$ of the obstacle as random variables. Let
@@ -378,8 +407,26 @@ MATLAB/Simulink, second stage on real robots.
     \subsection{Motion Models}
     Two types of robot models are commonly encountered in industrial practice.
     The first is the unicycle model, typically used for indoor mobile robots.
-    The second is the bicycle model, which serves as a~standard representation
+    The second is the bicycle model, which is as a~standard representation
     for cars in driver assistance systems and autonomous driving applications.
+
+    \begin{figure}
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig/unicycle_model.png}
+        \caption{Unicycle kinematic model.}
+        \label{fig:unicycle_model}
+    \end{subfigure}%
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.8\linewidth]{fig/bicycle_model.png}
+        \caption{Bicycle kinematic model}
+        \label{fig:bicycle_model}
+    \end{subfigure}
+        \caption{Motion models schematic view.}
+        \label{fig:motion_models}
+    \end{figure}
     
         %----------------------------------------------------------------------
         \subsubsection{Unicycle Model}
@@ -433,15 +480,6 @@ MATLAB/Simulink, second stage on real robots.
             \end{bmatrix}
             }_{u_{u}}.
         \end{equation}
-
-        \begin{figure}[H]
-        \begin{center}
-            \includegraphics[width=0.7\linewidth]{fig/unicycle_model.png}
-            \caption{Schematic of unicycle model.} 
-            \label{fig:unicycle_model}
-        \end{center}
-        \end{figure}
-
 
         \textbf{State:}
         The state vector is given by:
@@ -541,15 +579,6 @@ MATLAB/Simulink, second stage on real robots.
                 \delta_{b}
             \end{bmatrix}.
         \end{equation}
-         
-
-        \begin{figure}[H]
-        \begin{center}
-            \includegraphics[width=1.0\linewidth]{fig/bicycle_model.png}
-            \caption{Schematic of bicycle model.} 
-            \label{fig:bicycle_model}
-        \end{center}
-        \end{figure}
 
         \textbf{State:}
         The state vector is given by:
@@ -582,23 +611,23 @@ MATLAB/Simulink, second stage on real robots.
         %------------------------------------------------------------------
         \subsubsection{Unicycle Model Simulations}
         The unicycle model was tested in a~scenario where two robots are one
-        colision course. Both robots are controlled by the same
+        collision course. Both robots are controlled by the same
         controller, which is a~combination of a~CBF and a~nominal
         controller. Each robot has a~goal position to reach, which is
         located on the opposite side of the other robot. The robots start
         have access to own position and velocity, as well as noisy
         measurements of the other robot's position and velocity. The noise
-        is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+        is modelled as zero-mean Gaussian with standard deviation of $0.2 m$
         and $0.2 m/s$ for position and velocity, respectively.
 
         Simulation results, trajectories of both robots, for different
         values of $\alpha$ (from equation \ref{eq:safety_equation}) are
         presented in Figure~\ref{fig:unicycle_trajectories}. It can be
         observed that the robots trajectories are diverge from the straight
-        line produced by the nominal controller, to avoid colision.
+        line produced by the nominal controller, to avoid collision.
         \begin{figure}[H]
         \begin{center}
-            \includegraphics[width=1.0\linewidth]{fig/trajectories.eps}
+            \includegraphics[width=0.5\linewidth]{fig/trajectories.eps}
             \caption{Trajectories of robots with unicycle kinematics for
             different $\alpha$ values.} 
             \label{fig:unicycle_trajectories}
@@ -612,7 +641,7 @@ MATLAB/Simulink, second stage on real robots.
         that the robots are more conservative in their motion.
         \begin{figure}[H]
         \begin{center}
-            \includegraphics[width=1.0\linewidth]{fig/distance.eps}
+            \includegraphics[width=0.5\linewidth]{fig/distance.eps}
             \caption{Distance between robots (unicycle model) - it is clearly
             visible that in any case safe distance is crossed.} 
             \label{fig:unicycle_distances}
@@ -626,7 +655,7 @@ MATLAB/Simulink, second stage on real robots.
         safely to its goal.
         \begin{figure}[H]
         \begin{center}
-            \includegraphics[width=1.0\linewidth]{fig/positions.eps}
+            \includegraphics[width=0.5\linewidth]{fig/positions.eps}
             \caption{Position of both robots. Robot 1 runs nominal controller
             only, and Robot 2 uses CBF to avoid collision.} 
             \label{fig:unicycle_positions}
@@ -642,14 +671,14 @@ MATLAB/Simulink, second stage on real robots.
         located on the opposite side of the other robot. The robots start
         have access to own position and velocity, as well as noisy
         measurements of the other robot's position and velocity. The noise
-        is modeled as zero-mean Gaussian with standard deviation of $0.2 m$
+        is modelled as zero-mean Gaussian with standard deviation of $0.2 m$
         and $0.2 m/s$ for position and velocity, respectively.
 
         Simulation results, trajectories of both robots, for different
         values of $\alpha$ (from equation \ref{eq:safety_equation}) are
         presented in Figure~\ref{fig:bicycle_trajectories}. It can be
         observed that the robots trajectories are diverge from the straight
-        line produced by the nominal controller, to avoid colision. Those 
+        line produced by the nominal controller, to avoid collision. Those 
         deviations are visibly larger than i case of unicycle model, which
         is caused by the nonholonomic constraints of the bicycle model.
         Also this time in case of smallest value of $\alpha$ can be observed
@@ -657,7 +686,7 @@ MATLAB/Simulink, second stage on real robots.
 
         \begin{figure}[H]
         \begin{center}
-            \includegraphics[width=1.0\linewidth]{fig/trajectories_bicycle.eps}
+            \includegraphics[width=0.5\linewidth]{fig/trajectories_bicycle.eps}
             \caption{Trajectory of robots with bicycle kinematics for different
             $\alpha$ values.} 
             \label{fig:bicycle_trajectories}
@@ -671,7 +700,7 @@ MATLAB/Simulink, second stage on real robots.
 
         \begin{figure}[H]
         \begin{center}
-            \includegraphics[width=1.0\linewidth]{fig/distance_bicycle.eps}
+            \includegraphics[width=0.5\linewidth]{fig/distance_bicycle.eps}
             \caption{Distance between robots (bicycle model) - it is clearly
             visible that in any case safe distance is crossed.} 
             \label{fig:bicycle_distances}
@@ -706,8 +735,8 @@ scenarios, incorporating time-varying uncertainty estimates from Bayesian
 perception pipelines, and validating the approach in large-scale outdoor experiments.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
 \bibliographystyle{abbrv}
 \bibliography{refs}
 
-\end{multicols}
 \end{document}
