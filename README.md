@@ -96,11 +96,11 @@ values, is presented below:
 
 #### Bicycle model
 
-![trajectories](fig/robot_trajectory_alpha1_bicycle.gif)
-
 ![trajectories](fig/robot_trajectory_alpha5_bicycle.gif)
 
 ![trajectories](fig/robot_trajectory_alpha10_bicycle.gif)
+
+![trajectories](fig/robot_trajectory_alpha100_bicycle.gif)
 
 
 ## How to run?

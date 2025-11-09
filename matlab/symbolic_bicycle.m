@@ -56,9 +56,9 @@ theta_p = v * tan(ud) / L;
 v_p = ua;
 
 f = [x_p;y_p;theta_p;v_p];
-V = 0.5 * [(x_d-x)^2; (y_d-y)^2; (theta_d-theta)^2; (v_d-v)^2];
+V = 0.5 * (x^2 + y^2 + theta^2 + v^2);
 
-dV = (diff(V, x) + diff(V, y) + diff(V, theta) + diff(V, v));
+dV = [diff(V, x)'; diff(V, y); diff(V, theta); diff(V, v)];
 
 lfv = dV'*f;
 

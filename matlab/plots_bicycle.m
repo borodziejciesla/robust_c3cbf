@@ -1,7 +1,7 @@
 dt = 0.01;
-T = 15;
+T = 30;
 
-alphas = [1, 5, 10];
+alphas = [5, 10, 100];
 outputs = [];
 
 do_filter_robot_1 = true;
@@ -155,17 +155,17 @@ for alpha_index = 1:length(outputs)
     plot(robot_2_x, robot_2_y, 'b', 'LineWidth', 2, 'DisplayName', "Robot 2 trajectory");
     xlabel("x [m]")
     ylabel("y [m]")
-    legend("show");
+    legend("show", "Location", "best");
     title("\alpha = " + num2str(alphas(alpha_index)));
 
-    filename = "robot_trajectory_alpha"+num2str(alphas(alpha_index))+".gif";
+    filename = "robot_trajectory_alpha"+num2str(alphas(alpha_index))+"_bicycle.gif";
 
     heading_len = 1.0; % długość strzałki reprezentującej orientację
 
     car_length = 1.0;     % długość prostokąta robota [m]
     car_width  = 0.5;     % szerokość prostokąta robota [m]
 
-    for index = 1:50:length(robot_1_x)
+    for index = 1:10:length(robot_1_x)
         % --- Robot 1 ---
         x_c1 = robot_1_x(index);
         y_c1 = robot_1_y(index);
